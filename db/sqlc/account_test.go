@@ -47,20 +47,20 @@ func TestGetAccount(t *testing.T) {
 	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 }
 
-func TestUpdateAccount(t *testing.T) {
+func TestUpdateAccountBalance(t *testing.T) {
 	account1 := createRandomAccount(t)
 
-	arg := UpdateAccountParams{
+	arg := UpdateAccountBalanceParams{
 		ID:      account1.ID,
-		Balance: util.RandomMoney(),
+		Amount: util.RandomMoney(),
 	}
-	account2, err := testQueries.UpdateAccount(context.Background(), arg)
+	account2, err := testQueries.UpdateAccountBalance(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 
 	require.Equal(t, account1.ID, account2.ID)
 	require.Equal(t, account1.Owner, account2.Owner)
-	require.Equal(t, arg.Balance, account2.Balance)
+	require.Equal(t, account1.Balance + arg.Amount, account2.Balance)
 	require.Equal(t, account1.Currency, account2.Currency)
 	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 }
@@ -77,20 +77,24 @@ func TestDeleteAccount(t *testing.T) {
 }
 
 func TestListAccounts(t *testing.T) {
+	var lastAccount Account
 	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+		lastAccount = createRandomAccount(t)
 	}
 	arg := ListAccountsParams{
 		Limit:  5,
-		Offset: 5,
+		Offset: 0,
+		Owner: lastAccount.Owner,
+
 	}
 	accounts, err := testQueries.ListAccounts(context.Background(), arg)
 
 	require.NoError(t, err)
-	require.Len(t, accounts, 5)
+	require.NotEmpty(t, accounts)
 
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
+		require.Equal(t, lastAccount.Owner, account.Owner)
 	}
 
 }
