@@ -26,7 +26,8 @@ jobs:
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: simplebank
         ports:
-          - 5434:5434
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
