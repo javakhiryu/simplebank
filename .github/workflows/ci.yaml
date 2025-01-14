@@ -44,6 +44,12 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v4
 
+    - name: Go-Migrate install
+      run: | 
+        make migrateinstall
+        sudo mv migrate /usr/bin/
+        which migrate
+
     - name: Run migrations
       run: make migrateup
     
