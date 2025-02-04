@@ -48,7 +48,7 @@ func eqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher
 }
 
 func TestCreateUserAPi(t *testing.T) {
-	password := util.RandonString(6)
+	password := util.RandomString(6)
 	hashedPassword, err := util.HashedPassword(password)
 	if err != nil {
 		return
@@ -71,9 +71,9 @@ func TestCreateUserAPi(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.CreateUserParams{
-					Username: user.Username,
-					FullName: user.FullName,
-					Email:    user.Email,
+					Username:       user.Username,
+					FullName:       user.FullName,
+					Email:          user.Email,
 					HashedPassword: user.HashedPassword,
 				}
 
@@ -87,10 +87,10 @@ func TestCreateUserAPi(t *testing.T) {
 			},
 		},
 		{
-			name: "BadRequest",
+			name: "TooShortPassword",
 			body: gin.H{
 				"username":  user.Username,
-				"password":  "",
+				"password":  "123",
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
@@ -151,8 +151,8 @@ func randomUser(password string) db.User {
 	return db.User{
 		Username:       util.RandomOwner(),
 		HashedPassword: password,
-		FullName:       util.RandonString(6),
-		Email:          util.RandonString(6) + "@email.com",
+		FullName:       util.RandomString(6),
+		Email:          util.RandomString(6) + "@email.com",
 	}
 }
 
