@@ -4,11 +4,31 @@ package api
 
 import (
 	"os"
+	db "simplebank/db/sqlc"
+	"simplebank/util"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/require"
 )
+
+
+// NewTestServer creates a new instance of Server for testing purposes.
+// It takes a testing object and a db.Store as parameters, configures a
+// util.Config with random TokenSymetricKey and AccessTokenDuration set to one minute,
+// and returns the initialized Server. It requires no error from NewServer.
+
+func NewTestServer(t *testing.T, store db.Store) *Server {
+	config := util.Config{
+		TokenSymetricKey:    util.RandomString(32),
+		AccessTokenDuration: time.Minute,
+	}
+	server, err := NewServer(store, config)
+	require.NoError(t, err)
+	return server
+}
 
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
