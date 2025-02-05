@@ -9,8 +9,10 @@ import (
 	"net/http/httptest"
 	mockdb "simplebank/db/mock"
 	db "simplebank/db/sqlc"
+	"simplebank/token"
 	"simplebank/util"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -18,18 +20,27 @@ import (
 )
 
 func TestCreateTransferAPi(t *testing.T) {
+	password1, _ := util.HashedPassword(util.RandomString(6))
+	password2, _ := util.HashedPassword(util.RandomString(6))
+	password3, _ := util.HashedPassword(util.RandomString(6))
+	password4, _ := util.HashedPassword(util.RandomString(6))
+	fromUserUSD := randomUser(password1)
+	toUserUSD := randomUser(password2)
+	fromUserEUR := randomUser(password3)
+	toUserEUR := randomUser(password4)
 	currencyUSD := util.USD
 	currencyEUR := util.EUR
-	fromAccountUSD := accountWithCurrency(currencyUSD)
-	toAccountUSD := accountWithCurrency(currencyUSD)
-	fromAccountEUR := accountWithCurrency(currencyEUR)
-	toAccountEUR := accountWithCurrency(currencyEUR)
+	fromAccountUSD := accountWithCurrency(currencyUSD, fromUserUSD.Username)
+	toAccountUSD := accountWithCurrency(currencyUSD, toUserUSD.Username)
+	fromAccountEUR := accountWithCurrency(currencyEUR, fromUserEUR.Username)
+	toAccountEUR := accountWithCurrency(currencyEUR, toUserEUR.Username)
 
 	amount := util.RandomMoney()
 
 	testCases := []struct {
 		name          string
 		body          gin.H
+		setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
@@ -40,6 +51,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"to_account_id":   toAccountUSD.ID,
 				"amount":          amount,
 				"currency":        currencyUSD,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(fromAccountUSD, nil)
@@ -66,6 +80,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"amount":          amount,
 				"currency":        currencyUSD,
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(int64(1001))).Times(1).Return(db.Account{}, sql.ErrNoRows)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(toAccountUSD.ID)).Times(0)
@@ -86,6 +103,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"amount":          amount,
 				"currency":        currencyUSD,
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(fromAccountUSD, nil)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(int64(1001))).Times(1).Return(db.Account{}, sql.ErrNoRows)
@@ -105,6 +125,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"amount":          amount,
 				"currency":        currencyUSD,
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserEUR.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountEUR.ID)).Times(1).Return(fromAccountEUR, nil)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(toAccountUSD.ID)).Times(0)
@@ -121,6 +144,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"to_account_id":   toAccountEUR.ID,
 				"amount":          amount,
 				"currency":        currencyUSD,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(fromAccountUSD, nil)
@@ -139,6 +165,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"amount":          amount,
 				"currency":        "XYZ",
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(0)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(toAccountEUR.ID)).Times(0)
@@ -155,6 +184,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"to_account_id":   toAccountUSD.ID,
 				"amount":          -amount,
 				"currency":        currencyUSD,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(0)
@@ -173,6 +205,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"amount":          amount,
 				"currency":        currencyUSD,
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(db.Account{}, sql.ErrConnDone)
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(toAccountUSD.ID)).Times(0)
@@ -189,6 +224,9 @@ func TestCreateTransferAPi(t *testing.T) {
 				"to_account_id":   toAccountUSD.ID,
 				"amount":          amount,
 				"currency":        currencyUSD,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, fromUserUSD.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(fromAccountUSD, nil)
@@ -210,7 +248,7 @@ func TestCreateTransferAPi(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewTestServer(t, store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			data, err := json.Marshal(tc.body)
@@ -219,7 +257,7 @@ func TestCreateTransferAPi(t *testing.T) {
 			url := fmt.Sprintf("/createTransfer")
 			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
-
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -227,10 +265,10 @@ func TestCreateTransferAPi(t *testing.T) {
 	}
 }
 
-func accountWithCurrency(currency string) db.Account {
+func accountWithCurrency(currency string, owner string) db.Account {
 	return db.Account{
 		ID:       util.RandomInt(1, 1000),
-		Owner:    util.RandomOwner(),
+		Owner:    owner,
 		Balance:  util.RandomMoney(),
 		Currency: currency,
 	}

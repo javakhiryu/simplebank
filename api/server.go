@@ -29,34 +29,35 @@ func NewServer(store db.Store, config util.Config) (*Server, error) {
 		store:      store,
 		tokenMaker: tokenMaker,
 	}
-	
+
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("currency", validCurrency)
 	}
-	
+
 	server.setupRounter()
 
 	return server, nil
 }
 
-func (server *Server) setupRounter(){
+func (server *Server) setupRounter() {
 	router := gin.Default()
 
 	router.POST("/createUser", server.createUser)
 	router.POST("/login", server.loginUser)
-	router.POST("/account", server.createAccount)
 
-	router.GET("/account/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
-	router.GET("/getUser/:username", server.getUser)
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	router.PATCH("/updatePassword", server.updateUserHashedPassword)
+	authRoutes.POST("/account", server.createAccount)
 
-	router.POST("/createTransfer", server.createTransfer)
+	authRoutes.GET("/account/:id", server.getAccount)
+	authRoutes.GET("/accounts", server.listAccount)
+	authRoutes.GET("/getUser/:username", server.getUser)
 
-	router.DELETE("/account/:id", server.deleteAccount)
-	
-	
+	authRoutes.PATCH("/updatePassword", server.updateUserHashedPassword)
+
+	authRoutes.POST("/createTransfer", server.createTransfer)
+
+	authRoutes.DELETE("/account/:id", server.deleteAccount)
 
 	server.router = router
 

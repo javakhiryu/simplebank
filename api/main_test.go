@@ -20,7 +20,7 @@ import (
 // util.Config with random TokenSymetricKey and AccessTokenDuration set to one minute,
 // and returns the initialized Server. It requires no error from NewServer.
 
-func NewTestServer(t *testing.T, store db.Store) *Server {
+func newTestServer(t *testing.T, store db.Store) *Server {
 	config := util.Config{
 		TokenSymetricKey:    util.RandomString(32),
 		AccessTokenDuration: time.Minute,
