@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	db "simplebank/db/sqlc"
+	"simplebank/token"
 	"simplebank/util"
 	"time"
 
@@ -82,7 +83,6 @@ func (server *Server) getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
 	user, err := server.store.GetUser(ctx, req.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -96,8 +96,8 @@ func (server *Server) getUser(ctx *gin.Context) {
 }
 
 type UpdateUserHashedPasswordRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required,min=6"`
+	OldPassword string `json:"old_password" binding:"required,min=6"`
+	NewPassword string `json:"new_password" binding:"required,min=6"`
 }
 
 func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
@@ -106,11 +106,8 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	arg := db.UpdateUserHashedPasswordParams{
-		Username:       req.Username,
-		HashedPassword: req.Password,
-	}
-	user, err := server.store.UpdateUserHashedPassword(ctx, arg)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	user, err := server.store.GetUser(ctx, authPayload.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -119,7 +116,30 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+
+	err = util.CheckPassword(req.OldPassword, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, errorResponse(err))
+		return
+	}
+	hashedPassword, err := util.HashedPassword(req.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	}
+	arg := db.UpdateUserHashedPasswordParams{
+		HashedPassword: hashedPassword,
+		Username:       authPayload.Username,
+	}
+	rsp, err := server.store.UpdateUserHashedPassword(ctx, arg)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 type loginUserRequest struct {
