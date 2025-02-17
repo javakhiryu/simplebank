@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 	db "simplebank/db/sqlc"
 	"simplebank/token"
@@ -74,7 +75,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 type getUserRequest struct {
-	Username string `uri:"username" binding:"required"`
+	Username string `uri:"username" binding:"required,alphanum"`
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
@@ -116,7 +117,11 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-
+	err = util.CheckPassword(req.NewPassword, user.HashedPassword)
+	if err == nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("new password cannot be the same as old password")))
+		return
+	}
 	err = util.CheckPassword(req.OldPassword, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, errorResponse(err))
@@ -132,10 +137,6 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 	}
 	rsp, err := server.store.UpdateUserHashedPassword(ctx, arg)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

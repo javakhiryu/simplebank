@@ -21,8 +21,8 @@ import (
 )
 
 func TestGetAccountAPi(t *testing.T) {
-	//`password, _ := util.HashedPassword(util.RandomString(6))
-	user := randomUser("password")
+	password, _ := util.HashedPassword(util.RandomString(6))
+	user := randomUser(password)
 	account := randomAccount(user.Username)
 
 	testCases := []struct {
