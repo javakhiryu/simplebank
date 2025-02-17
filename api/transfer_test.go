@@ -73,6 +73,28 @@ func TestCreateTransferAPi(t *testing.T) {
 		},
 
 		{
+			name: "InvalidToken",
+			body: gin.H{
+				"from_account_id": fromAccountUSD.ID,
+				"to_account_id":   toAccountUSD.ID,
+				"amount":          amount,
+				"currency":        currencyUSD,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationBearer, "username", time.Minute)
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(fromAccountUSD.ID)).Times(1).Return(fromAccountUSD, nil)
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Any()).Times(0)
+				store.EXPECT().TransferTx(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+
+		{
 			name: "FromAccountNotFound",
 			body: gin.H{
 				"from_account_id": int64(1001),
