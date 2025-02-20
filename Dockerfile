@@ -5,6 +5,7 @@ RUN go build -o main main.go
 RUN apk add curl
 RUN apk --no-cache add curl
 RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
+RUN chmod +x start.sh
 
 # Run stage
 FROM alpine:3.21
