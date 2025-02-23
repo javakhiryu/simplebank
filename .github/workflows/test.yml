@@ -31,10 +31,14 @@ jobs:
         ports:
           - 5432:5432  # Проброс порта 5432 на хост
         options: >-
-          --health-cmd pg_isready  # Команда для проверки здоровья сервиса
-          --health-interval 10s  # Интервал проверки здоровья
-          --health-timeout 5s  # Таймаут проверки здоровья
-          --health-retries 5  # Количество попыток проверки здоровья
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5 
+        # Команда для проверки здоровья сервиса
+        # Интервал проверки здоровья
+        # Таймаут проверки здоровья
+        # Количество попыток проверки здоровья
 
     # Шаги, которые будут выполнены в рамках job
     steps:
@@ -56,9 +60,12 @@ jobs:
     # Шаг 4: Установка Go-Migrate
     - name: Go-Migrate install
       run: | 
-        make migrateinstall  # Установка Go-Migrate с помощью Makefile
-        sudo mv migrate /usr/bin/  # Перемещение бинарного файла migrate в /usr/bin/
-        which migrate  # Проверка, что migrate установлен и доступен
+        make migrateinstall
+        sudo mv migrate /usr/bin/  
+        which migrate  
+      # Установка Go-Migrate с помощью Makefile
+      # Перемещение бинарного файла migrate в /usr/bin/
+      # Проверка, что migrate установлен и доступен
 
     # Шаг 5: Применение миграций
     - name: Run migrations
