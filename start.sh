@@ -7,7 +7,7 @@ set -e
 echo "run db migration"
 
 # Загружаем переменные окружения из файла .env
-source /app/.env
+source /app/app.env
 
 # Выполняем миграции с помощью утилиты `migrate`
 # -path /app/migration: Указывает путь к папке с миграциями
