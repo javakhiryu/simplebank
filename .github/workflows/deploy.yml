@@ -1,39 +1,50 @@
+# Название workflow
 name: Deploy to production
 
+# Триггеры для запуска workflow
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Запускать workflow при пуше в ветку main
 
+# Определение jobs (заданий)
 jobs:
 
+  # Job для сборки Docker-образа
   build:
-    name: Build image
-    runs-on: ubuntu-latest
+    name: Build image  # Название job
+    runs-on: ubuntu-latest  # Использовать последнюю версию Ubuntu для выполнения job
 
+    # Шаги, которые будут выполнены в рамках job
     steps:
 
+    # Шаг 1: Клонирование репозитория
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4  # Использование действия для клонирования репозитория
 
+    # Шаг 2: Настройка AWS credentials
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1  # Действие для настройки AWS credentials
       with:
-        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        aws-region: eu-central-1
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}  # Access Key ID из GitHub Secrets
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}  # Secret Access Key из GitHub Secrets
+        aws-region: eu-central-1  # Регион AWS
 
+    # Шаг 3: Логин в Amazon ECR
     - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      id: login-ecr  # Идентификатор шага для использования в последующих шагах
+      uses: aws-actions/amazon-ecr-login@v1  # Действие для логина в Amazon ECR
 
+    # Шаг 4: Загрузка секретов из AWS Secrets Manager и сохранение в файл app.env
     - name: Load secrets and save to app.env
       run: aws secretsmanager get-secret-value --secret-id simplebank --query SecretString --output text | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' >app.env
+      # Команда для получения секретов из AWS Secrets Manager и сохранения их в файл app.env
 
+    # Шаг 5: Сборка, тегирование и загрузка Docker-образа в Amazon ECR
     - name: Build, tag, and push image to Amazon ECR
       env:
-        REGISTRY: ${{steps.login-ecr.outputs.registry}}
-        REPOSITORY: simplebank
-        IMAGE_TAG: ${{ github.sha }}
+        REGISTRY: ${{steps.login-ecr.outputs.registry}}  # Регистрация ECR из шага login-ecr
+        REPOSITORY: simplebank  # Название репозитория в ECR
+        IMAGE_TAG: ${{ github.sha }}  # Тег образа (хэш коммита)
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .  # Сборка Docker-образа
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG  # Загрузка Docker-образа в ECR

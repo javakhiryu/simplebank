@@ -1,61 +1,76 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
+# Название workflow
 name: Run unit test
 
+# Триггеры для запуска workflow
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Запускать workflow при пуше в ветку main
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Запускать workflow при создании pull request в ветку main
 
+# Определение jobs (заданий)
 jobs:
 
+  # Job для тестирования Go-проекта
   build:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test  # Название job
+    runs-on: ubuntu-latest  # Использовать последнюю версию Ubuntu для выполнения job
 
+    # Сервисы, которые будут запущены для тестирования
     services:
-      # Label used to access the service container
+      # Сервис PostgreSQL для тестирования
       postgres:
-        # Docker Hub image
-        image: postgres:17
-        # Provide the password for postgres
+        image: postgres:17  # Использование Docker-образа PostgreSQL версии 17
         env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: secret
-          POSTGRES_DB: simplebank
+          POSTGRES_USER: root  # Имя пользователя для PostgreSQL
+          POSTGRES_PASSWORD: secret  # Пароль для PostgreSQL
+          POSTGRES_DB: simplebank  # Название базы данных
         ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
+          - 5432:5432  # Проброс порта 5432 на хост
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        # Команда для проверки здоровья сервиса
+        # Интервал проверки здоровья равен 10с
+        # Таймаут проверки здоровья
+        # Количество попыток проверки здоровья
 
-
+    # Шаги, которые будут выполнены в рамках job
     steps:
-    - uses: actions/checkout@v4
 
+    # Шаг 1: Клонирование репозитория
+    - uses: actions/checkout@v4  # Использование действия для клонирования репозитория
+
+    # Шаг 2: Установка Go
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v4  # Действие для установки Go
       with:
-        go-version: '1.24.0'
-      id: go
+        go-version: '1.24.0'  # Указание версии Go
+      id: go  # Идентификатор шага для использования в последующих шагах
 
+    # Шаг 3: Клонирование репозитория (повторное, возможно, избыточное)
     - name: Checkout 
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4  # Использование действия для клонирования репозитория
 
+    # Шаг 4: Установка Go-Migrate
     - name: Go-Migrate install
       run: | 
         make migrateinstall
-        sudo mv migrate /usr/bin/
-        which migrate
+        sudo mv migrate /usr/bin/  
+        which migrate  
+      # Установка Go-Migrate с помощью Makefile
+      # Перемещение бинарного файла migrate в /usr/bin/
+      # Проверка, что migrate установлен и доступен
 
+    # Шаг 5: Применение миграций
     - name: Run migrations
-      run: make migrateup
-    
+      run: make migrateup  # Применение миграций с помощью Makefile
 
+    # Шаг 6: Запуск тестов
     - name: Test
-      run: make test
+      run: make test  # Запуск тестов с помощью Makefile

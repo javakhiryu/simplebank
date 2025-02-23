@@ -1,21 +1,27 @@
+# Версия формата docker-compose
 version: "3.9"
-services:
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: simplebank
 
+# Определение сервисов
+services:
+
+  # Сервис PostgreSQL
+  postgres:
+    image: postgres:17-alpine  # Использование образа PostgreSQL версии 17 на базе Alpine Linux
+    environment:
+      POSTGRES_USER: root  # Имя пользователя для PostgreSQL
+      POSTGRES_PASSWORD: secret  # Пароль для PostgreSQL
+      POSTGRES_DB: simplebank  # Название базы данных
+
+  # Сервис API
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .  # Контекст сборки (текущая директория)
+      dockerfile: Dockerfile  # Использование Dockerfile для сборки образа
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Проброс порта 8080 контейнера на порт 8080 хоста
     environment:
-      - DB_SOURCE=postgresql://root:secret@postgres:5432/simplebank?sslmode=disable
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/simplebank?sslmode=disable  # Переменная окружения для подключения к PostgreSQL
     depends_on:
-      - postgres
-    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
-    command: ["/app/main"]
+      - postgres  # Указывает, что сервис api зависит от сервиса postgres
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]  # Точка входа для запуска скрипта
+    command: ["/app/main"]  # Команда для запуска приложения
