@@ -13,6 +13,11 @@ import (
 	"github.com/lib/pq"
 )
 
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Cause   error  `swaggertype:"string"`
+}
+
 type createUserRequest struct {
 	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6"`
@@ -37,6 +42,18 @@ func newUserResponse(user db.User) userResponse {
 	}
 }
 
+// createUser godoc
+//
+//	@Summary		Create a new user
+//	@Description	Create a new user account
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		createUserRequest	true	"Create User Request"
+//	@Success		200		{object}	userResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/createUser [post]
 func (server *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 	var res userResponse
@@ -78,6 +95,19 @@ type getUserRequest struct {
 	Username string `uri:"username" binding:"required,alphanum"`
 }
 
+// getUser godoc
+//
+//	@Summary		Get user by username
+//	@Description	Get user by username
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			username	path		string	true	"Username"
+//	@Success		200			{object}	userResponse
+//	@Failure		400			{object}	ErrorResponse
+//	@Failure		404			{object}	ErrorResponse
+//	@Failure		500			{object}	ErrorResponse
+//	@Router			/getUser/{username} [get]
 func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -101,6 +131,20 @@ type UpdateUserHashedPasswordRequest struct {
 	NewPassword string `json:"new_password" binding:"required,min=6"`
 }
 
+
+// updateUserHashedPassword godoc
+//
+//	@Summary		Update user password
+//	@Description	Update user password
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		UpdateUserHashedPasswordRequest	true	"Update User Hashed Password Request"
+//	@Success		200		{object}	userResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/updateUserHashedPassword [patch]
 func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 	var req UpdateUserHashedPasswordRequest
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
@@ -135,12 +179,13 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 		HashedPassword: hashedPassword,
 		Username:       authPayload.Username,
 	}
-	rsp, err := server.store.UpdateUserHashedPassword(ctx, arg)
+	user, err = server.store.UpdateUserHashedPassword(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, rsp)
+	res := newUserResponse(user)
+	ctx.JSON(http.StatusOK, res)
 }
 
 type loginUserRequest struct {
@@ -153,6 +198,20 @@ type loginUserResponse struct {
 	User         userResponse `json:"user"`
 }
 
+// loginUser godoc
+//
+//	@Summary		Login user
+//	@Description	Login user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		loginUserRequest	true	"Login User Request"
+//	@Success		200		{object}	loginUserResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Failure		404		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/login [post]
 func (server *Server) loginUser(ctx *gin.Context) {
 
 	var req loginUserRequest
