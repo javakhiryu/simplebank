@@ -1,0 +1,49 @@
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это apps/v1, которая поддерживает Deployment.
+apiVersion: apps/v1
+
+# Тип ресурса, который мы создаем. В данном случае это Deployment.
+# Deployment управляет созданием и обновлением Pod'ов.
+kind: Deployment
+
+# Метаданные Deployment, такие как имя и метки.
+metadata:
+  # Имя Deployment. Это имя будет использоваться для управления Deployment через kubectl.
+  name: simple-bank-api-depoyment
+
+  # Метки, которые будут присвоены Deployment.
+  labels:
+    app: simple-bank-api
+
+# Спецификация Deployment, которая описывает желаемое состояние.
+spec:
+  # Количество реплик (Pod'ов), которые должны быть запущены. В данном случае 1.
+  replicas: 1
+
+  # Селектор, который определяет, какие Pod'ы управляются этим Deployment.
+  selector:
+    matchLabels:
+      # Deployment будет управлять Pod'ами с меткой app: simple-bank-api.
+      app: simple-bank-api
+
+  # Шаблон для создания Pod'ов.
+  template:
+    # Метаданные для Pod'ов.
+    metadata:
+      # Метки, которые будут присвоены Pod'ам.
+      labels:
+        app: simple-bank-api
+
+    # Спецификация Pod'ов.
+    spec:
+      # Список контейнеров, которые будут запущены в Pod'е.
+      containers:
+      - name: simple-bank-api  # Имя контейнера.
+        # Образ Docker, который будет использоваться для создания контейнера.
+        # В данном случае это образ из приватного репозитория Amazon ECR.
+        image: 302263077755.dkr.ecr.eu-central-1.amazonaws.com/simplebank:latest
+        imagePullPolicy: Always  # Политика загрузки образа (всегда загружать образ при запуске Pod'а).
+
+        # Порт, который будет открыт в контейнере.
+        ports:
+         - containerPort: 8080  # Контейнер будет слушать на порту 8080.

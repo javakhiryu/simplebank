@@ -1,0 +1,55 @@
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это networking.k8s.io/v1, которая поддерживает IngressClass.
+apiVersion: networking.k8s.io/v1
+
+# Тип ресурса, который мы создаем. В данном случае это IngressClass.
+# IngressClass определяет, какой контроллер Ingress будет обрабатывать Ingress-ресурсы.
+kind: IngressClass
+
+# Метаданные IngressClass, такие как имя.
+metadata:
+  # Имя IngressClass. Это имя будет использоваться для ссылки на этот класс в Ingress-ресурсах.
+  name: nginx
+
+# Спецификация IngressClass.
+spec:
+  # Контроллер, который будет обрабатывать Ingress-ресурсы с этим классом.
+  # В данном случае это ingress-nginx (популярный контроллер для управления входящим трафиком).
+  controller: k8s.io/ingress-nginx
+
+---
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это networking.k8s.io/v1, которая поддерживает Ingress.
+apiVersion: networking.k8s.io/v1
+
+# Тип ресурса, который мы создаем. В данном случае это Ingress.
+# Ingress управляет входящим HTTP/HTTPS-трафиком и направляет его на соответствующие Service.
+kind: Ingress
+
+# Метаданные Ingress, такие как имя.
+metadata:
+  # Имя Ingress. Это имя будет использоваться для управления Ingress через kubectl.
+  name: simple-bank-api-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt  # Аннотация для указания ClusterIssuer, который будет использоваться для выдачи сертификата.
+# Спецификация Ingress, которая описывает правила маршрутизации трафика.
+spec:
+  # Класс Ingress, который будет обрабатывать этот ресурс.
+  # В данном случае это nginx (IngressClass, который мы определили выше).
+  ingressClassName: nginx
+  # Правила маршрутизации трафика.
+  rules:
+  - host: "api.javakhiryu-simplebank.click"  # Домен, на который будет направлен трафик.
+    http:
+      paths:
+      - pathType: Prefix  # Тип пути. Prefix означает, что путь будет сопоставляться с началом URL.
+        path: "/"         # Путь, на который будет направлен трафик. В данном случае корневой путь.
+        backend:
+          service:
+            name: simple-bank-api-service  # Имя Service, на который будет направлен трафик.
+            port:
+              number: 80  # Порт Service, на который будет направлен трафик.
+  tls:
+  - hosts:
+    - api.javakhiryu-simplebank.click  # Домен, на который будет направлен трафик.
+    secretName: simple-bank-api-cert  # Имя Secret, в котором будет храниться SSL-сертификат.

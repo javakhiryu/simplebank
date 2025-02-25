@@ -1,0 +1,32 @@
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это v1, которая поддерживает Service.
+apiVersion: v1
+
+# Тип ресурса, который мы создаем. В данном случае это Service.
+# Service обеспечивает доступ к Pod'ам по сети.
+kind: Service
+
+# Метаданные Service, такие как имя и метки.
+metadata:
+  # Имя Service. Это имя будет использоваться для управления Service через kubectl.
+  name: simple-bank-api-service
+
+  # Метки, которые будут присвоены Service.
+  labels:
+    app: simple-bank-api
+
+# Спецификация Service, которая описывает, как Service должен работать.
+spec:
+  # Селектор, который определяет, какие Pod'ы будут связаны с этим Service.
+  selector:
+    # Service будет направлять трафик на Pod'ы с меткой app: simple-bank-api.
+    app: simple-bank-api
+
+  # Портовая конфигурация Service.
+  ports:
+    - protocol: TCP  # Протокол, который будет использоваться (TCP или UDP).
+      port: 80       # Порт, на котором Service будет доступен внутри кластера.
+      targetPort: 8080  # Порт, на который Service будет перенаправлять трафик в Pod'ах.
+
+  # Тип Service. В данном случае это ClusterIP.
+  type: ClusterIP
