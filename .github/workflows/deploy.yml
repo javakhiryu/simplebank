@@ -53,8 +53,8 @@ jobs:
         REPOSITORY: simplebank  # Название репозитория в ECR
         IMAGE_TAG: ${{ github.sha }}  # Тег образа (хэш коммита)
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .  
-        docker push -a $REGISTRY/$REPOSITORY:$IMAGE_TAG  
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
+        docker push --all-tags $REGISTRY/$REPOSITORY:$IMAGE_TAG
       # Сборка Docker-образа
       # Загрузка Docker-образа в ECR
 
