@@ -13,14 +13,13 @@ import (
 )
 
 //	@title			Simple Bank API
-//	@version		1.0
 //	@description	This is a simple bank API
 //	@host			api.javakhiryu-simplebank.click
-//	@BasePath
-//	@schemes	http
-//	@schemes	https
-//	@produce	json
-//	@consumes	json
+//	@BasePath		/
+//	@schemes		http
+//	@schemes		https
+//	@produce		json
+//	@consumes		json
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {

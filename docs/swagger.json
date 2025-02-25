@@ -9,10 +9,10 @@
     "info": {
         "description": "This is a simple bank API",
         "title": "Simple Bank API",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
     "host": "api.javakhiryu-simplebank.click",
+    "basePath": "/",
     "paths": {
         "/account/{id}": {
             "delete": {

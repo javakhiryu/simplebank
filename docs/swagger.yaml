@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   api.ErrorResponse:
     properties:
@@ -151,7 +152,6 @@ info:
   contact: {}
   description: This is a simple bank API
   title: Simple Bank API
-  version: "1.0"
 paths:
   /account/{id}:
     delete:

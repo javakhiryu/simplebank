@@ -20,6 +20,17 @@ jobs:
     # Шаг 1: Клонирование репозитория
     - name: Checkout
       uses: actions/checkout@v4  # Использование действия для клонирования репозитория
+
+    - name: Install swag
+      run: |
+        go install github.com/swaggo/swag/cmd/swag@latest
+        go get -u github.com/swaggo/gin-swagger
+        go get -u github.com/swaggo/files
+        export PATH=$(go env GOPATH)/bin:$PATH
+
+    - name: Generate Swagger docs
+      run: |
+        swag init
     
     - name: Install kubectl
       uses: azure/setup-kubectl@v4

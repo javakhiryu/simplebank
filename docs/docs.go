@@ -701,9 +701,9 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "",
 	Host:             "api.javakhiryu-simplebank.click",
-	BasePath:         "",
+	BasePath:         "/",
 	Schemes:          []string{"https"},
 	Title:            "Simple Bank API",
 	Description:      "This is a simple bank API",
