@@ -11,7 +11,7 @@ jobs:
 
   # Job для сборки Docker-образа
   build:
-    name: Build image  # Название job
+    name: deploy  # Название job
     runs-on: ubuntu-latest  # Использовать последнюю версию Ubuntu для выполнения job
 
     # Шаги, которые будут выполнены в рамках job
@@ -20,6 +20,13 @@ jobs:
     # Шаг 1: Клонирование репозитория
     - name: Checkout
       uses: actions/checkout@v4  # Использование действия для клонирования репозитория
+    
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+         version: 'v1.32.2' # default is latest stable
+      id: install
+  
 
     # Шаг 2: Настройка AWS credentials
     - name: Configure AWS credentials
@@ -46,5 +53,20 @@ jobs:
         REPOSITORY: simplebank  # Название репозитория в ECR
         IMAGE_TAG: ${{ github.sha }}  # Тег образа (хэш коммита)
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .  # Сборка Docker-образа
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG  # Загрузка Docker-образа в ECR
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .  
+        docker push -a $REGISTRY/$REPOSITORY:$IMAGE_TAG  
+      # Сборка Docker-образа
+      # Загрузка Docker-образа в ECR
+
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --name simplebank --region eu-central-1 
+
+    # Шаг 6: Деплой в Kubernetes
+    - name: Deploy image, expose, add issuer, add ingress
+      run: |
+        kubectl apply -f eks/deployment.yaml
+        kubectl apply -f eks/service.yaml
+        kubectl apply -f eks/issuer.yaml
+        kubectl apply -f eks/ingress.yaml
+
+        
