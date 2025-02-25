@@ -17,6 +17,21 @@ type createAccountRequest struct {
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
+
+// createAccount godoc
+//	@Summary		Create an account
+//	@Description	Create an account for the authorized user
+//	@Tags			account
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		createAccountRequest	true	"Create Account Request"
+//	@Success		200		{object}	db.Account
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Failure		403		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Security		Bearer
+//	@Router			/createAccount [post]
 func (server *Server) createAccount(ctx *gin.Context) {
 	var req createAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -52,6 +67,22 @@ type getAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
+
+// getAccount godoc
+//	@Summary		Get account by ID
+//	@Description	Retrieve an account by its ID, ensuring the account belongs to the authenticated user
+//	@Tags			account
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Account ID"
+//	@Success		200	{object}	db.Account
+//	@Failure		400	{object}	ErrorResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Failure		500	{object}	ErrorResponse
+//	@Security		Bearer
+//	@Router			/account/{id} [get]
+
 func (server *Server) getAccount(ctx *gin.Context) {
 	var req getAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -83,6 +114,22 @@ type listAccountRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 }
 
+
+// listAccount godoc
+//	@Summary		List accounts
+//	@Description	List accounts for the authorized user
+//	@Tags			account
+//	@Accept			json
+//	@Produce		json
+//	@Param			page_size	query		int	true	"Page Size"
+//	@Param			page_id		query		int	true	"Page ID"
+//	@Success		200			{array}		db.Account
+//	@Failure		400			{object}	ErrorResponse
+//	@Failure		401			{object}	ErrorResponse
+//	@Failure		404			{object}	ErrorResponse
+//	@Failure		500			{object}	ErrorResponse
+//	@Security		Bearer
+//	@Router			/accounts [get]
 func (server *Server) listAccount(ctx *gin.Context) {
 	var req listAccountRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -110,6 +157,20 @@ type deleteAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
+// deleteAccount godoc
+//	@Summary		Delete an account
+//	@Description	Delete an account by ID
+//	@Tags			account
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int		true	"Account ID"
+//	@Success		200	{string}	string	"Account with Id: {id} has been deleted"
+//	@Failure		400	{object}	ErrorResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Failure		500	{object}	ErrorResponse
+//	@Security		Bearer
+//	@Router			/account/{id} [delete]
 func (server *Server) deleteAccount(ctx *gin.Context) {
 	var req deleteAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
