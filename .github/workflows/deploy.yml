@@ -27,11 +27,7 @@ jobs:
         go get -u github.com/swaggo/gin-swagger
         go get -u github.com/swaggo/files
         export PATH=$(go env GOPATH)/bin:$PATH
-
-    - name: Generate Swagger docs
-      run: |
-        swag init
-    
+  
     - name: Install kubectl
       uses: azure/setup-kubectl@v4
       with:
