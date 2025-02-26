@@ -96,7 +96,6 @@ type getUserRequest struct {
 }
 
 
-/*************  ✨ Codeium Command ⭐  *************/
 // getUser godoc
 //
 //	@Summary		Get a user
@@ -109,8 +108,7 @@ type getUserRequest struct {
 //	@Failure		400		{object}	ErrorResponse
 //	@Failure		404		{object}	ErrorResponse
 //	@Failure		500		{object}	ErrorResponse
-//	@Router			/user/{username} [get]
-/******  2cb8ddc9-e227-4d76-a16f-a3b93599a907  *******/
+//	@Router			/getUser/{username} [get]
 func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
