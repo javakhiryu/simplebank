@@ -49,6 +49,14 @@ spec:
             name: simple-bank-api-service  # Имя Service, на который будет направлен трафик.
             port:
               number: 80  # Порт Service, на который будет направлен трафик.
+      - pathType: Prefix # Тип пути. Prefix означает, что путь будет сопоставляться с началом URL.
+        path: "/swagger/*"  # Путь, на который будет направлен трафик. В данном случае /swagger/*.
+        backend:
+          service: 
+            name: simple-bank-api-service # Имя Service, на который будет направлен трафик.
+            port:
+              number: 80 # Порт Service, на который будет направлен трафик.
+
   tls:
   - hosts:
     - api.javakhiryu-simplebank.click  # Домен, на который будет направлен трафик.
