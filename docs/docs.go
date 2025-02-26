@@ -500,6 +500,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/refreshToken": {
+            "post": {
+                "description": "Refresh a token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "token"
+                ],
+                "summary": "Refresh a token",
+                "parameters": [
+                    {
+                        "description": "Refresh Token Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.refreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.refreshTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/updateUserHashedPassword": {
             "patch": {
                 "security": [
@@ -648,8 +706,39 @@ const docTemplate = `{
                 "access_token": {
                     "type": "string"
                 },
+                "access_token_expires_at": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "refresh_token_expires_at": {
+                    "type": "string"
+                },
                 "user": {
                     "$ref": "#/definitions/api.userResponse"
+                }
+            }
+        },
+        "api.refreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.refreshTokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "access_token_expires_at": {
+                    "type": "string"
                 }
             }
         },

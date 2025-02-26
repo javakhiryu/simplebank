@@ -47,6 +47,7 @@ func (server *Server) setupRounter() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.POST("/createUser", server.createUser)
 	router.POST("/login", server.loginUser)
+	router.POST("/refreshToken", server.refreshToken)
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
