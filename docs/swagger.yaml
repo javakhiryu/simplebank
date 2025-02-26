@@ -166,10 +166,15 @@ definitions:
       transfer:
         $ref: '#/definitions/db.Transfer'
     type: object
-host: api.javakhiryu-simplebank.click
+host: localhost:8080
 info:
   contact: {}
-  description: This is a simple bank API
+  description: |-
+    This is a simple bank API.
+    It provides APIs for the frontend to do following things:
+    1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
+    2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
+    3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
   title: Simple Bank API
 paths:
   /account/{id}:
