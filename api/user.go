@@ -95,19 +95,7 @@ type getUserRequest struct {
 	Username string `uri:"username" binding:"required,alphanum"`
 }
 
-// getUser godoc
-//
-//	@Summary		Get user by username
-//	@Description	Get user by username
-//	@Tags			user
-//	@Accept			json
-//	@Produce		json
-//	@Param			username	path		string	true	"Username"
-//	@Success		200			{object}	userResponse
-//	@Failure		400			{object}	ErrorResponse
-//	@Failure		404			{object}	ErrorResponse
-//	@Failure		500			{object}	ErrorResponse
-//	@Router			/getUser/{username} [get]
+
 func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -123,14 +111,14 @@ func (server *Server) getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	res := newUserResponse(user)
+	ctx.JSON(http.StatusOK, res)
 }
 
 type UpdateUserHashedPasswordRequest struct {
 	OldPassword string `json:"old_password" binding:"required,min=6"`
 	NewPassword string `json:"new_password" binding:"required,min=6"`
 }
-
 
 // updateUserHashedPassword godoc
 //
