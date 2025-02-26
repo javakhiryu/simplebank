@@ -15,6 +15,10 @@ import (
 //	@title			Simple Bank API
 //	@description	This is a simple bank API
 //	@host			api.javakhiryu-simplebank.click
+//  @securityDefinitions.apiKey	BearerAuth
+//	@in				header
+//	@name			Authorization
+//	@version		1.0
 //	@BasePath		/
 //	@schemes		http
 //	@schemes		https
