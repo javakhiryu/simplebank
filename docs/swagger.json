@@ -8,8 +8,73 @@
     "host": "api.javakhiryu-simplebank.click",
     "paths": {
         "/account/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve an account by its ID, ensuring the account belongs to the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Get account by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -71,6 +136,9 @@
         "/accounts": {
             "get": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -144,6 +212,9 @@
                 "security": [
                     {
                         "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Create an account for the authorized user",
@@ -205,6 +276,9 @@
         "/createTransfer": {
             "post": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -307,6 +381,11 @@
         },
         "/getUser/{username}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a user by username",
                 "consumes": [
                     "application/json"
@@ -415,6 +494,11 @@
         },
         "/updateUserHashedPassword": {
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update user password",
                 "consumes": [
                     "application/json"
@@ -687,7 +771,8 @@
         }
     },
     "securityDefinitions": {
-        "BearerAuth": {
+        "Bearer": {
+            "description": "Type \"Bearer \" followed by a space and then your token",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

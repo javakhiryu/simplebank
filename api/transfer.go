@@ -32,6 +32,7 @@ type transferRequest struct {
 //	@Failure		500		{object}	ErrorResponse
 //	@Security		Bearer
 //	@Router			/createTransfer [post]
+//  @Security Bearer
 func (server *Server) createTransfer(ctx *gin.Context) {
 	var req transferRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

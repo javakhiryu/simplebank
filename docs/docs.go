@@ -16,8 +16,73 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/account/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve an account by its ID, ensuring the account belongs to the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Get account by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -79,6 +144,9 @@ const docTemplate = `{
         "/accounts": {
             "get": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -152,6 +220,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "Bearer": []
+                    },
+                    {
+                        "Bearer": []
                     }
                 ],
                 "description": "Create an account for the authorized user",
@@ -213,6 +284,9 @@ const docTemplate = `{
         "/createTransfer": {
             "post": {
                 "security": [
+                    {
+                        "Bearer": []
+                    },
                     {
                         "Bearer": []
                     }
@@ -315,6 +389,11 @@ const docTemplate = `{
         },
         "/getUser/{username}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a user by username",
                 "consumes": [
                     "application/json"
@@ -423,6 +502,11 @@ const docTemplate = `{
         },
         "/updateUserHashedPassword": {
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update user password",
                 "consumes": [
                     "application/json"
@@ -695,7 +779,8 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BearerAuth": {
+        "Bearer": {
+            "description": "Type \"Bearer \" followed by a space and then your token",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

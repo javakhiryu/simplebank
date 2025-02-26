@@ -188,7 +188,48 @@ paths:
             $ref: '#/definitions/api.ErrorResponse'
       security:
       - Bearer: []
+      - Bearer: []
       summary: Delete an account
+      tags:
+      - account
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an account by its ID, ensuring the account belongs to
+        the authenticated user
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - Bearer: []
+      - Bearer: []
+      summary: Get account by ID
       tags:
       - account
   /accounts:
@@ -234,6 +275,7 @@ paths:
             $ref: '#/definitions/api.ErrorResponse'
       security:
       - Bearer: []
+      - Bearer: []
       summary: List accounts
       tags:
       - account
@@ -274,6 +316,7 @@ paths:
             $ref: '#/definitions/api.ErrorResponse'
       security:
       - Bearer: []
+      - Bearer: []
       summary: Create an account
       tags:
       - account
@@ -309,6 +352,7 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       security:
+      - Bearer: []
       - Bearer: []
       summary: Create a transfer
       tags:
@@ -373,6 +417,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Get a user
       tags:
       - user
@@ -445,11 +491,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update user password
       tags:
       - user
 securityDefinitions:
-  BearerAuth:
+  Bearer:
+    description: Type "Bearer " followed by a space and then your token
     in: header
     name: Authorization
     type: apiKey

@@ -32,6 +32,7 @@ type createAccountRequest struct {
 //	@Failure		500		{object}	ErrorResponse
 //	@Security		Bearer
 //	@Router			/createAccount [post]
+//  @Security Bearer
 func (server *Server) createAccount(ctx *gin.Context) {
 	var req createAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -82,7 +83,7 @@ type getAccountRequest struct {
 //	@Failure		500	{object}	ErrorResponse
 //	@Security		Bearer
 //	@Router			/account/{id} [get]
-
+//  @Security Bearer
 func (server *Server) getAccount(ctx *gin.Context) {
 	var req getAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -130,6 +131,7 @@ type listAccountRequest struct {
 //	@Failure		500			{object}	ErrorResponse
 //	@Security		Bearer
 //	@Router			/accounts [get]
+//  @Security Bearer
 func (server *Server) listAccount(ctx *gin.Context) {
 	var req listAccountRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -171,6 +173,7 @@ type deleteAccountRequest struct {
 //	@Failure		500	{object}	ErrorResponse
 //	@Security		Bearer
 //	@Router			/account/{id} [delete]
+//  @Security Bearer
 func (server *Server) deleteAccount(ctx *gin.Context) {
 	var req deleteAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {

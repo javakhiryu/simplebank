@@ -104,11 +104,12 @@ type getUserRequest struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			username	path		string	true	"Username"
-//	@Success		200		{object}	userResponse
-//	@Failure		400		{object}	ErrorResponse
-//	@Failure		404		{object}	ErrorResponse
-//	@Failure		500		{object}	ErrorResponse
+//	@Success		200			{object}	userResponse
+//	@Failure		400			{object}	ErrorResponse
+//	@Failure		404			{object}	ErrorResponse
+//	@Failure		500			{object}	ErrorResponse
 //	@Router			/getUser/{username} [get]
+//	@Security		Bearer
 func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -146,6 +147,7 @@ type UpdateUserHashedPasswordRequest struct {
 //	@Failure		401		{object}	ErrorResponse
 //	@Failure		500		{object}	ErrorResponse
 //	@Router			/updateUserHashedPassword [patch]
+//	@Security		Bearer
 func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 	var req UpdateUserHashedPasswordRequest
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
