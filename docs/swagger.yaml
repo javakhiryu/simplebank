@@ -343,6 +343,39 @@ paths:
       summary: Create a new user
       tags:
       - user
+  /getUser/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.userResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get a user
+      tags:
+      - user
   /login:
     post:
       consumes:
@@ -413,39 +446,6 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Update user password
-      tags:
-      - user
-  /user/{username}:
-    get:
-      consumes:
-      - application/json
-      description: Get a user by username
-      parameters:
-      - description: Username
-        in: path
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.userResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/api.ErrorResponse'
-      summary: Get a user
       tags:
       - user
 securityDefinitions:
