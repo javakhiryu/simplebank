@@ -6,6 +6,8 @@ package db
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Account struct {
@@ -22,6 +24,17 @@ type Entry struct {
 	// can be negative or positive
 	Amount    int64     `json:"amount"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type Session struct {
+	ID           uuid.UUID `json:"id"`
+	RefreshToken string    `json:"refresh_token"`
+	Username     string    `json:"username"`
+	UserAgent    string    `json:"user_agent"`
+	IpAddress    string    `json:"ip_address"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	CreatedAt    time.Time `json:"created_at"`
+	IsBlocked    bool      `json:"is_blocked"`
 }
 
 type Transfer struct {

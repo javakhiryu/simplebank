@@ -60,8 +60,28 @@ definitions:
     properties:
       access_token:
         type: string
+      access_token_expires_at:
+        type: string
+      refresh_token:
+        type: string
+      refresh_token_expires_at:
+        type: string
       user:
         $ref: '#/definitions/api.userResponse'
+    type: object
+  api.refreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  api.refreshTokenResponse:
+    properties:
+      access_token:
+        type: string
+      access_token_expires_at:
+        type: string
     type: object
   api.transferRequest:
     properties:
@@ -460,6 +480,44 @@ paths:
       summary: Login user
       tags:
       - user
+  /refreshToken:
+    post:
+      consumes:
+      - application/json
+      description: Refresh a token
+      parameters:
+      - description: Refresh Token Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.refreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.refreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Refresh a token
+      tags:
+      - token
   /updateUserHashedPassword:
     patch:
       consumes:

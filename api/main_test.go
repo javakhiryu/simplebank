@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 // NewTestServer creates a new instance of Server for testing purposes.
 // It takes a testing object and a db.Store as parameters, configures a
 // util.Config with random TokenSymetricKey and AccessTokenDuration set to one minute,
@@ -22,8 +21,9 @@ import (
 
 func newTestServer(t *testing.T, store db.Store) *Server {
 	config := util.Config{
-		TokenSymetricKey:    util.RandomString(32),
-		AccessTokenDuration: time.Minute,
+		TokenSymetricKey:     util.RandomString(32),
+		AccessTokenDuration:  time.Minute,
+		RefreshTokenDuration: time.Hour,
 	}
 	server, err := NewServer(store, config)
 	require.NoError(t, err)
