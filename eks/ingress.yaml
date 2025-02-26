@@ -49,7 +49,7 @@ spec:
             name: simple-bank-api-service  # Имя Service, на который будет направлен трафик.
             port:
               number: 80  # Порт Service, на который будет направлен трафик.
-      - pathType: ImpementationSpecific # Тип пути. ImplementationSpecific означает, что путь будет сопоставляться с URL без изменений.
+      - pathType: ImpelementationSpecific # Тип пути. ImplementationSpecific означает, что путь будет сопоставляться с URL без изменений.
         path: "/swagger/*"  # Путь, на который будет направлен трафик. В данном случае /swagger/*.
         backend:
           service: 
