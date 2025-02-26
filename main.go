@@ -18,12 +18,13 @@ import (
 // @description					1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
 // @description					2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
 // @description					3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
+// @description
 // @description					Feel free to contact me if you have any questions
-// @contact.name				Javokhir Yulchiboev
-// @contact.url					https://t.me/javakhiryu
-// @contact.email				javakhiryulchibaev@gmail.com
-// @description					GitHub Repository
+// @description
+// @description					GitHub Repository:
+// @contact.name				Javakhir Yu
 // @contact.url 				https://github.com/javakhiryu/simplebank
+// @contact.email				javakhiryulchibaev@gmail.com
 // @host						api.javakhiryu-simplebank.click
 // @SecurityDefinitions.apiKey	Bearer
 // @in							header

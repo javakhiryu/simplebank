@@ -18,7 +18,10 @@ metadata:
 # Спецификация Deployment, которая описывает желаемое состояние.
 spec:
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   # Количество реплик (Pod'ов), которые должны быть запущены. В данном случае 1.
   replicas: 1
 
