@@ -166,7 +166,7 @@ definitions:
       transfer:
         $ref: '#/definitions/db.Transfer'
     type: object
-host: localhost:8080
+host: api.javakhiryu-simplebank.click
 info:
   contact:
     email: javakhiryulchibaev@gmail.com

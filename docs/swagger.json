@@ -9,7 +9,7 @@
             "email": "javakhiryulchibaev@gmail.com"
         }
     },
-    "host": "localhost:8080",
+    "host": "api.javakhiryu-simplebank.click",
     "paths": {
         "/account/{id}": {
             "get": {
