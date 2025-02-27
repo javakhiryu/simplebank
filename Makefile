@@ -1,3 +1,5 @@
+DB_URL=postgres://root:secret@localhost:5432/simplebank?sslmode=disable
+
 postgres:
 	 docker run --name postgres17 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:17-alpine
 	    
@@ -11,16 +13,16 @@ migrateinstall:
 	$ curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
 
 migrateup:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simplebank?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simplebank?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 migrateuplast:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simplebank?sslmode=disable" -verbose up 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
 migratedownlast:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simplebank?sslmode=disable" -verbose down 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
 sqlc:
 	sqlc generate
@@ -34,4 +36,10 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go simplebank/db/sqlc Store 
 
-.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast sqlc test migrateinstall server mock
+db_docs:
+	dbdocs build docs/db/db.dbml
+
+db_schema:
+	dbml2sql --postgres -o docs/db/schema.sql docs/db/db.dbml
+
+.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast sqlc test migrateinstall server mock db_docs db_schema

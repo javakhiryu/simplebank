@@ -12,30 +12,30 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// @title						Simple Bank API
-// @description					This is a simple bank API.
-// @description					It provides APIs for the frontend to do following things:
-// @description					1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
-// @description					2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
-// @description					3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
-// @description
-// @description					Feel free to contact me if you have any questions
-// @description
-// @description					GitHub Repository:
-// @contact.name				Javakhir Yu
-// @contact.url 				https://github.com/javakhiryu/simplebank
-// @contact.email				javakhiryulchibaev@gmail.com
-// @host						api.javakhiryu-simplebank.click
-// @SecurityDefinitions.apiKey	Bearer
-// @in							header
-// @name						Authorization
-// @description					Type "Bearer " followed by a space and then your token
-// @version						1.0
-// @BasePath					/
-// @schemes						http
-// @schemes						https
-// @produce						json
-// @consumes					json
+//	@title			Simple Bank API
+//	@description	This is a simple bank API.
+//	@description	It provides APIs for the frontend to do following things:
+//	@description	1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
+//	@description	2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
+//	@description	3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
+//	@description
+//	@description	Feel free to contact me if you have any questions
+//	@description
+//	@description				GitHub Repository:
+//	@contact.name				Javakhir Yu
+//	@contact.url				https://github.com/javakhiryu/simplebank
+//	@contact.email				javakhiryulchibaev@gmail.com
+//	@host						api.javakhiryu-simplebank.click
+//	@SecurityDefinitions.apiKey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer " followed by a space and then your token
+//	@version					1.0
+//	@BasePath					/
+//	@schemes					http
+//	@schemes					https
+//	@produce					json
+//	@consumes					json
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
