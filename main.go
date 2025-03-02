@@ -3,39 +3,44 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net"
 	"simplebank/api"
 	db "simplebank/db/sqlc"
+	"simplebank/gapi"
+	"simplebank/pb"
 	"simplebank/util"
 
 	_ "simplebank/docs"
 
 	_ "github.com/lib/pq"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-//	@title			Simple Bank API
-//	@description	This is a simple bank API.
-//	@description	It provides APIs for the frontend to do following things:
-//	@description	1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
-//	@description	2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
-//	@description	3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
-//	@description
-//	@description	Feel free to contact me if you have any questions
-//	@description
-//	@description				GitHub Repository:
-//	@contact.name				Javakhir Yu
-//	@contact.url				https://github.com/javakhiryu/simplebank
-//	@contact.email				javakhiryulchibaev@gmail.com
-//	@host						api.javakhiryu-simplebank.click
-//	@SecurityDefinitions.apiKey	Bearer
-//	@in							header
-//	@name						Authorization
-//	@description				Type "Bearer " followed by a space and then your token
-//	@version					1.0
-//	@BasePath					/
-//	@schemes					http
-//	@schemes					https
-//	@produce					json
-//	@consumes					json
+// @title			Simple Bank API
+// @description	This is a simple bank API.
+// @description	It provides APIs for the frontend to do following things:
+// @description	1. Create and manage bank accounts, which are composed of owner’s name, balance, and currency.
+// @description	2. Record all balance changes to each of the account. So every time some money is added to or subtracted from the account, an account entry record will be created.
+// @description	3. Perform a money transfer between 2 accounts. This should happen within a transaction, so that either both accounts’ balance are updated successfully or none of them are.
+// @description
+// @description	Feel free to contact me if you have any questions
+// @description
+// @description				GitHub Repository:
+// @contact.name				Javakhir Yu
+// @contact.url				https://github.com/javakhiryu/simplebank
+// @contact.email				javakhiryulchibaev@gmail.com
+// @host						api.javakhiryu-simplebank.click
+// @SecurityDefinitions.apiKey	Bearer
+// @in							header
+// @name						Authorization
+// @description				Type "Bearer " followed by a space and then your token
+// @version					1.0
+// @BasePath					/
+// @schemes					http
+// @schemes					https
+// @produce					json
+// @consumes					json
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
@@ -47,15 +52,41 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
+	runGRPCServer(config, store)
+
+}
+
+func runGRPCServer(config util.Config, store db.Store) {
+	server, err := gapi.NewServer(store, config)
+	if err != nil {
+		log.Fatal("Cannot create server:", err)
+		return
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterSimpleBankServer(grpcServer, server)
+	reflection.Register(grpcServer)
+
+	listener, err := net.Listen("tcp", config.GRPCServerAddress)
+	if err != nil {
+		log.Fatal("cannot create listener:", err)
+	}
+	log.Printf("start gRPC server at %s", listener.Addr().String())
+
+	err = grpcServer.Serve(listener)
+	if err != nil {
+		log.Fatal("cannot start grpc server:", err)
+	}
+}
+
+func runGinServer(config util.Config, store db.Store) {
 	server, err := api.NewServer(store, config)
 	if err != nil {
 		log.Fatal("Cannot create server:", err)
 		return
 	}
 
-	err = server.Start(config.ServerAddress)
+	err = server.Start(config.HTTPServerAddress)
 	if err != nil {
 		log.Fatal("Cannot start the server:", err)
 	}
-
 }

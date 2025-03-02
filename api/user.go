@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
@@ -196,6 +197,7 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
+	SessionID             uuid.UUID    `json:"session_id"`
 	AcccessToken          string       `json:"access_token"`
 	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
 	RefreshToken          string       `json:"refresh_token"`
@@ -268,6 +270,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 	res := loginUserResponse{
+		SessionID:             refreshPayload.ID,
 		AcccessToken:          accessToken,
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,

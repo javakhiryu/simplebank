@@ -75,7 +75,7 @@ The service that we’re going to build is a simple bank. It will provide APIs f
 - Run db migration up 1 version:
 
   ```bash
-  make migrateup1
+  make migrateuplast
   ```
 
 - Run db migration down all versions:
@@ -87,7 +87,7 @@ The service that we’re going to build is a simple bank. It will provide APIs f
 - Run db migration down 1 version:
 
   ```bash
-  make migratedown1
+  make migratedownlast
   ```
 
 ### Documentation
