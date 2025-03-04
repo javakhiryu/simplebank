@@ -9,7 +9,7 @@
             "email": "javakhiryulchibaev@gmail.com"
         }
     },
-    "host": "api.javakhiryu-simplebank.click",
+    "host": "localhost:8080",
     "paths": {
         "/account/{id}": {
             "get": {
@@ -709,6 +709,9 @@
                     "type": "string"
                 },
                 "refresh_token_expires_at": {
+                    "type": "string"
+                },
+                "session_id": {
                     "type": "string"
                 },
                 "user": {

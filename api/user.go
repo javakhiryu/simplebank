@@ -66,6 +66,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 	hashedPassword, err := util.HashedPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	arg := db.CreateUserParams{
@@ -264,13 +265,13 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		CreatedAt:    time.Now(),
 		IsBlocked:    false,
 	}
-	_, err = server.store.CreateSession(ctx, arg)
+	session, err := server.store.CreateSession(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	res := loginUserResponse{
-		SessionID:             refreshPayload.ID,
+		SessionID:             session.ID,
 		AcccessToken:          accessToken,
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,

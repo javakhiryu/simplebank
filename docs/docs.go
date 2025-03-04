@@ -719,6 +719,9 @@ const docTemplate = `{
                 "refresh_token_expires_at": {
                     "type": "string"
                 },
+                "session_id": {
+                    "type": "string"
+                },
                 "user": {
                     "$ref": "#/definitions/api.userResponse"
                 }
@@ -884,7 +887,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "",
-	Host:             "api.javakhiryu-simplebank.click",
+	Host:             "localhost:8080",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Simple Bank API",
