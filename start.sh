@@ -4,17 +4,17 @@
 set -e
 
 # Выводим сообщение о начале выполнения миграций базы данных
-echo "run db migration"
+#echo "run db migration"
 
 # Загружаем переменные окружения из файла .env
-source /app/app.env
+#source /app/app.env
 
 # Выполняем миграции с помощью утилиты `migrate`
 # -path /app/migration: Указывает путь к папке с миграциями
 # -database "$DB_SOURCE": Указывает строку подключения к базе данных (берется из переменной окружения DB_SOURCE)
 # -verbose: Включает подробный вывод
 # up: Применяет миграции
-/app/migrate -path /app/migration -database "$DB_SOURCE" -verbose up
+#/app/migrate -path /app/migration -database "$DB_SOURCE" -verbose up
 
 # Выводим сообщение о запуске приложения
 echo "start the app"

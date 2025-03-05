@@ -1,5 +1,5 @@
 # Версия формата docker-compose
-version: "3.9"
+#version: "3.9"
 
 # Определение сервисов
 services:

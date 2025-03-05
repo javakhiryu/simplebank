@@ -15,10 +15,10 @@ RUN go build -o main main.go
 RUN apk add curl
 
 # Повторная установка `curl` без кэширования (избыточно, так как уже установлено выше).
-RUN apk --no-cache add curl
+#RUN apk --no-cache add curl
 
 # Скачиваем и распаковываем утилиту `migrate` для управления миграциями базы данных.
-RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
+#RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.2/migrate.linux-amd64.tar.gz | tar xvz
 
 # Делаем скрипт `start.sh` исполняемым.
 RUN chmod +x start.sh
@@ -34,7 +34,7 @@ WORKDIR /app
 COPY --from=builder /app/main .
 
 # Копируем утилиту `migrate` из этапа `builder`.
-COPY --from=builder /app/migrate ./migrate
+#COPY --from=builder /app/migrate ./migrate
 
 # Копируем файл с переменными окружения (`app.env`) в контейнер.
 COPY app.env .
@@ -46,7 +46,7 @@ COPY start.sh .
 COPY wait-for.sh .
 
 # Копируем папку с миграциями базы данных в контейнер.
-COPY db/migration ./migration
+COPY db/migration ./db/migration
 
 # Открываем порт 8080 для доступа к приложению.
 EXPOSE 8080
