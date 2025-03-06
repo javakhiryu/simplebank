@@ -23,7 +23,7 @@ jobs:
     services:
       # Сервис PostgreSQL для тестирования
       postgres:
-        image: postgres:17  # Использование Docker-образа PostgreSQL версии 17
+        image: postgres:17-alpine  # Использование Docker-образа PostgreSQL версии 17
         env:
           POSTGRES_USER: root  # Имя пользователя для PostgreSQL
           POSTGRES_PASSWORD: secret  # Пароль для PostgreSQL

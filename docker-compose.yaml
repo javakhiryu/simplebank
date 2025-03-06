@@ -19,6 +19,7 @@ services:
       dockerfile: Dockerfile  # Использование Dockerfile для сборки образа
     ports:
       - "8080:8080"  # Проброс порта 8080 контейнера на порт 8080 хоста
+      - "9090:9090"
     environment:
       - DB_SOURCE=postgresql://root:secret@postgres:5432/simplebank?sslmode=disable  # Переменная окружения для подключения к PostgreSQL
     depends_on:
