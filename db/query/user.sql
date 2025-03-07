@@ -18,3 +18,11 @@ SET hashed_password = $1,
 password_changed_at = now()
 WHERE username = $2
 RETURNING *;
+
+-- name: UpdateUser :one
+UPDATE users
+SET 
+full_name = coalesce(sqlc.narg('full_name'), full_name),
+email = coalesce(sqlc.narg('email'), email)
+WHERE username = sqlc.arg('username')
+RETURNING *;

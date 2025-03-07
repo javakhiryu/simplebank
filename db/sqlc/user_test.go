@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"simplebank/util"
 	"testing"
 	"time"
@@ -67,4 +68,62 @@ func TestUpdateUserHashedPassword(t *testing.T) {
 	require.Equal(t, arg.HashedPassword, user2.HashedPassword)
 	require.Equal(t, user1.FullName, user2.FullName)
 	require.WithinDuration(t, time.Now(), user2.PasswordChangedAt, time.Second)
+}
+
+func TestUpdateUsersFullname(t *testing.T) {
+	oldUser := createRandomUser(t)
+	newFullName := util.RandomString(6)
+	arg := UpdateUserParams{
+		Username: oldUser.Username,
+		FullName: sql.NullString{
+			String: newFullName,
+			Valid:  true,
+		},
+	}
+
+	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.FullName, newUser.FullName)
+	require.Equal(t, newFullName, newUser.FullName)
+}
+
+func TestUpdateUsersEmail(t *testing.T) {
+	oldUser := createRandomUser(t)
+	newEmail := util.RandomString(6) + "@gmail.com"
+	arg := UpdateUserParams{
+		Username: oldUser.Username,
+		Email: sql.NullString{
+			String: newEmail,
+			Valid:  true,
+		},
+	}
+
+	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.Email, newUser.Email)
+	require.Equal(t, newEmail, newUser.Email)
+}
+
+func TestUpdateUsersFullnameEmail(t *testing.T) {
+	oldUser := createRandomUser(t)
+	newFullName := util.RandomString(6)
+	newEmail := util.RandomString(6) + "@gmail.com"
+	arg := UpdateUserParams{
+		Username: oldUser.Username,
+		FullName: sql.NullString{
+			String: newFullName,
+			Valid:  true,
+		},
+		Email: sql.NullString{
+			String: newEmail,
+			Valid:  true,
+		},
+	}
+
+	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.FullName, newUser.FullName)
+	require.Equal(t, newFullName, newUser.FullName)
+	require.NotEqual(t, oldUser.Email, newUser.Email)
+	require.Equal(t, newEmail, newUser.Email)
 }
