@@ -22,3 +22,7 @@ func violationsError(violations []*errdetails.BadRequest_FieldViolation) error {
 	}
 	return statusDetails.Err()
 }
+
+func unauthencatedError(err error) error {
+	return status.Errorf(codes.Unauthenticated, "unauthenticated: %v", err)
+}

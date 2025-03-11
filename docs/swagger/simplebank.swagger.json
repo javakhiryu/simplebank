@@ -226,7 +226,10 @@
         "username": {
           "type": "string"
         },
-        "password": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
           "type": "string"
         }
       }

@@ -15,22 +15,42 @@ import (
 )
 
 func (server *Server) UpdateUserPassword(ctx context.Context, req *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, unauthencatedError(err)
+	}
 	violations := validateUpdateUserPasswordRequest(req)
 	if violations != nil {
 		return nil, violationsError(violations)
 	}
 
-	hashedPassword, err := util.HashedPassword(req.GetPassword())
+	if authPayload.Username != req.GetUsername() {
+		return nil, status.Errorf(codes.PermissionDenied, "cannot update other user's information")
+	}
+
+	user, err := server.store.GetUser(ctx, authPayload.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+
+	err = util.CheckPassword(req.GetOldPassword(), user.HashedPassword)
+	if err != nil {
+		return nil, status.Errorf(codes.PermissionDenied, "old password is incorrect: %v", err)
+	}
+
+	hashedPassword, err := util.HashedPassword(req.GetNewPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
 	}
-
 	arg := db.UpdateUserHashedPasswordParams{
 		Username:       req.GetUsername(),
 		HashedPassword: hashedPassword,
 	}
 
-	user, err := server.store.UpdateUserHashedPassword(ctx, arg)
+	user, err = server.store.UpdateUserHashedPassword(ctx, arg)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
@@ -48,7 +68,10 @@ func validateUpdateUserPasswordRequest(req *pb.UpdateUserPasswordRequest) (viola
 	if err := valid.ValidateUsername(req.GetUsername()); err != nil {
 		violations = append(violations, fieldViolation("username", err))
 	}
-	if err := valid.ValidatePassword(req.GetPassword()); err != nil {
+	if err := valid.ValidatePassword(req.GetOldPassword()); err != nil {
+		violations = append(violations, fieldViolation("password", err))
+	}
+	if err := valid.ValidatePassword(req.GetNewPassword()); err != nil {
 		violations = append(violations, fieldViolation("password", err))
 	}
 	return violations
