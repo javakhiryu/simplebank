@@ -56,6 +56,9 @@ evans:
 	evans --host localhost --port 9090  -r repl
 
 swagger:
-	swag init 
+	swag init
 
-.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast sqlc test migrateinstall server mock db_docs db_schema proto evans swagger
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7.4-alpine
+
+.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast sqlc test migrateinstall server mock db_docs db_schema proto evans swagger redis

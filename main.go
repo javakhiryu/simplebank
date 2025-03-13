@@ -11,7 +11,9 @@ import (
 	"simplebank/gapi"
 	"simplebank/pb"
 	"simplebank/util"
+	"simplebank/worker"
 
+	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -69,10 +71,16 @@ func main() {
 	}
 
 	runDBMigration(config.MigrationURL, config.DBSource)
-
 	store := db.NewStore(conn)
-	go runGatewayServer(config, store)
-	runGRPCServer(config, store)
+
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisServerAddress,
+	}
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+
+	go runTaskProcessor(redisOpt, store)
+	go runGatewayServer(config, store, taskDistributor)
+	runGRPCServer(config, store, taskDistributor)
 
 }
 
@@ -87,8 +95,8 @@ func runDBMigration(configURL string, dbSource string) {
 	log.Info().Msg("db migrated successfully")
 }
 
-func runGRPCServer(config util.Config, store db.Store) {
-	server, err := gapi.NewServer(store, config)
+func runGRPCServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(store, config, taskDistributor)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create server")
 		return
@@ -111,8 +119,8 @@ func runGRPCServer(config util.Config, store db.Store) {
 	}
 }
 
-func runGatewayServer(config util.Config, store db.Store) {
-	server, err := gapi.NewServer(store, config)
+func runGatewayServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(store, config, taskDistributor)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create server")
 		return
@@ -152,6 +160,15 @@ func runGatewayServer(config util.Config, store db.Store) {
 	err = http.Serve(listener, handler)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot start http server")
+	}
+}
+
+func runTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store){
+	taskProcessor := worker.NewRedisTaskProcessor(redisOpt, store)
+	log.Info().Msg("start task processor")
+	err := taskProcessor.Start()
+	if err !=nil{
+		log.Fatal().Err(err).Msg("failed to start task processor")
 	}
 }
 

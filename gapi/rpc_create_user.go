@@ -7,7 +7,10 @@ import (
 	"simplebank/util"
 	"simplebank/valid"
 	_ "simplebank/valid"
+	"simplebank/worker"
+	"time"
 
+	"github.com/hibiken/asynq"
 	"github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -16,9 +19,9 @@ import (
 
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	violations := validateCreateUserRequest(req)
-	if violations !=nil {
-		return nil,	violationsError(violations)
-	} 
+	if violations != nil {
+		return nil, violationsError(violations)
+	}
 	hashedPassword, err := util.HashedPassword(req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
@@ -40,6 +43,20 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
+	}
+
+	taskPayload := worker.PayloadSendVerifyEmail{
+		Username: user.Username,
+	}
+	options := []asynq.Option{
+		asynq.MaxRetry(10),
+		asynq.ProcessIn(10 * time.Second),
+		asynq.Queue(worker.CriticalQueue),
+	}
+
+	err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, &taskPayload, options...)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to distribute send verify email task: %v", err)
 	}
 	rsp := &pb.CreateUserResponse{
 		User: convertUser(user),
