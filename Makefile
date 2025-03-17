@@ -24,6 +24,9 @@ migrateuplast:
 migratedownlast:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
 sqlc:
 	sqlc generate
 
@@ -61,4 +64,4 @@ swagger:
 redis:
 	docker run --name redis -p 6379:6379 -d redis:7.4-alpine
 
-.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast sqlc test migrateinstall server mock db_docs db_schema proto evans swagger redis
+.PHONY: postgres createdb dropdb migrateup migratedown migrateuplast migratedownlast new_migration sqlc test migrateinstall server mock db_docs db_schema proto evans swagger redis

@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	db "simplebank/db/sqlc"
+	"simplebank/mail"
 
 	"github.com/hibiken/asynq"
 	"github.com/redis/go-redis/v9"
@@ -23,9 +24,10 @@ type TaskProcessor interface {
 type RedisTaskProcessor struct {
 	server *asynq.Server
 	store  db.Store
+	mailer mail.EmailSender
 }
 
-func NewRedisTaskProcessor(redisOtp asynq.RedisClientOpt, store db.Store) TaskProcessor {
+func NewRedisTaskProcessor(mailer mail.EmailSender, redisOtp asynq.RedisClientOpt, store db.Store) TaskProcessor {
 	redis.SetLogger(NewLogger())
 	server := asynq.NewServer(redisOtp, asynq.Config{
 		Queues: map[string]int{
@@ -42,6 +44,7 @@ func NewRedisTaskProcessor(redisOtp asynq.RedisClientOpt, store db.Store) TaskPr
 	return &RedisTaskProcessor{
 		server: server,
 		store:  store,
+		mailer: mailer,
 	}
 }
 
