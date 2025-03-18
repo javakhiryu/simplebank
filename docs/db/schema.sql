@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml.dbdiagram.io)
 -- Database: PostgreSQL
--- Generated at: 2025-03-17T09:09:27.855Z
+-- Generated at: 2025-03-18T13:31:43.127Z
 
 CREATE TABLE "users" (
   "username" varchar PRIMARY KEY,
@@ -14,7 +14,7 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "verify_emails" (
-  "id" uuid PRIMARY KEY,
+  "id" bigserial PRIMARY KEY,
   "username" varchar NOT NULL,
   "email" varchar NOT NULL,
   "secret_code" varchar NOT NULL,

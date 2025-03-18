@@ -1,5 +1,5 @@
 CREATE TABLE "verify_emails" (
-  "id" uuid PRIMARY KEY,
+  "id" bigserial PRIMARY KEY,
   "username" varchar NOT NULL,
   "email" varchar NOT NULL,
   "secret_code" varchar NOT NULL,

@@ -22,7 +22,7 @@ func ValidateUsername(value string) (err error) {
 
 	if !isValidUsername(value) {
 		return fmt.Errorf("must contain only lowercase letters, numbers, and underscores")
-	}	
+	}
 	return nil
 }
 
@@ -33,7 +33,7 @@ func ValidatePassword(validate string) (err error) {
 func ValidateEmail(value string) (err error) {
 	ValidateString(value, 3, 100)
 
-	if _, err := mail.ParseAddress(value); err!=nil{
+	if _, err := mail.ParseAddress(value); err != nil {
 		return fmt.Errorf("must be a valid email address")
 	}
 	return nil
@@ -44,5 +44,17 @@ func ValidateFullName(value string) (err error) {
 	if !isValidFullname(value) {
 		return fmt.Errorf("must contain only letters and spaces")
 	}
+	return nil
+}
+
+func ValidateVerifyEmailId(value int64) (err error) {
+	if value <= 0 {
+		return fmt.Errorf("id must be greater than 0")
+	}
+	return nil
+}
+
+func ValidateSecretCode(value string) (err error) {
+	ValidateString(value, 32, 128)
 	return nil
 }

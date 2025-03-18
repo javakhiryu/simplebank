@@ -156,6 +156,45 @@
           "user"
         ]
       }
+    },
+    "/v1/verify_email": {
+      "get": {
+        "summary": "Verify Email",
+        "description": "API to verify email address of newly created user",
+        "operationId": "SimpleBank_VerifyEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbVerifyEmailResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "secretCode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "user"
+        ]
+      }
     }
   },
   "definitions": {
@@ -283,6 +322,14 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "pbVerifyEmailResponse": {
+      "type": "object",
+      "properties": {
+        "isEmailVerified": {
+          "type": "boolean"
         }
       }
     },

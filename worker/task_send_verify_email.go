@@ -7,8 +7,6 @@ import (
 	"fmt"
 	db "simplebank/db/sqlc"
 	"simplebank/util"
-
-	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )
@@ -55,20 +53,16 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 		}
 		return fmt.Errorf("failed to fetch user: %w", err)
 	}
-	secretCode := util.RandomString(32)
-	Id := uuid.New()
-
 	verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
-		ID:         Id,
 		Username:   user.Username,
 		Email:      user.Email,
-		SecretCode: secretCode,
+		SecretCode: util.RandomString(32),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create verify email record: %w", err)
 	}
 	subject := "Welcome to Simple Bank"
-	verifyLink := fmt.Sprintf("http://localhost:8080?id=%s&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
+	verifyLink := fmt.Sprintf("http://localhost:8080/v1/verify_email?email_id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
 	content := fmt.Sprintf(`
 		<html>
 		<head>

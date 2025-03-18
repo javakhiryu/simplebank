@@ -23,6 +23,7 @@ RETURNING *;
 UPDATE users
 SET 
 full_name = coalesce(sqlc.narg('full_name'), full_name),
-email = coalesce(sqlc.narg('email'), email)
+email = coalesce(sqlc.narg('email'), email),
+is_email_verified = coalesce(sqlc.narg('is_email_verified'), is_email_verified)
 WHERE username = sqlc.arg('username')
 RETURNING *;
