@@ -37,7 +37,8 @@ server:
 	go run main.go
 
 mock:
-	mockgen -package mockdb -destination db/mock/store.go simplebank/db/sqlc Store 
+	mockgen -package mockdb -destination db/mock/store.go simplebank/db/sqlc Store
+	mockgen -package mockwk -destination worker/mock/distibutor.go simplebank/worker TaskDistributor 
 
 db_docs:
 	dbdocs build docs/db/db.dbml --password AksZX5wFaudwYhA

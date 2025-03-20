@@ -35,7 +35,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 			Email:    req.GetEmail(),
 	},
 	AfterCreate: func(user db.User) error {
-		taskPayload := worker.PayloadSendVerifyEmail{
+		taskPayload := &worker.PayloadSendVerifyEmail{
 			Username: user.Username,
 		}
 		options := []asynq.Option{
@@ -44,10 +44,10 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 			asynq.Queue(worker.CriticalQueue),
 		}
 	
-		return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, &taskPayload, options...)
+		return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, options...)
 	},
 }
-
+	
 	txResult, err := server.store.CreateUserTx(ctx, arg)
 	if pqErr, ok := err.(*pq.Error); ok {
 		switch pqErr.Code.Name() {
