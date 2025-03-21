@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -18,21 +17,21 @@ type transferRequest struct {
 	Currency      string `json:"currency" binding:"required,currency"`
 }
 
-
 // createTransfer godoc
-//	@Summary		Create a transfer
-//	@Description	Create a money transfer between two accounts
-//	@Tags			transfer
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		transferRequest	true	"Transfer Request"
-//	@Success		200		{object}	db.TransferTxResult
-//	@Failure		400		{object}	ErrorResponse
-//	@Failure		401		{object}	ErrorResponse
-//	@Failure		500		{object}	ErrorResponse
-//	@Security		Bearer
-//	@Router			/createTransfer [post]
-//  @Security Bearer
+//
+//		@Summary		Create a transfer
+//		@Description	Create a money transfer between two accounts
+//		@Tags			transfer
+//		@Accept			json
+//		@Produce		json
+//		@Param			request	body		transferRequest	true	"Transfer Request"
+//		@Success		200		{object}	db.TransferTxResult
+//		@Failure		400		{object}	ErrorResponse
+//		@Failure		401		{object}	ErrorResponse
+//		@Failure		500		{object}	ErrorResponse
+//		@Security		Bearer
+//		@Router			/createTransfer [post]
+//	 @Security Bearer
 func (server *Server) createTransfer(ctx *gin.Context) {
 	var req transferRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -76,7 +75,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 func (server *Server) validAccount(ctx *gin.Context, AccountID int64, currency string) (db.Account, bool) {
 	account, err := server.store.GetAccount(ctx, AccountID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return account, false
 		}

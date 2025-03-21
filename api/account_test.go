@@ -18,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,7 +61,7 @@ func TestGetAccountAPi(t *testing.T) {
 				store.EXPECT().
 					GetAccount(gomock.Any(), gomock.Eq(account.ID)).
 					Times(1).
-					Return(db.Account{}, sql.ErrNoRows)
+					Return(db.Account{}, db.ErrNoRowsFound)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
@@ -122,6 +123,7 @@ func TestGetAccountAPi(t *testing.T) {
 			defer ctrl.Finish()
 
 			store := mockdb.NewMockStore(ctrl)
+
 			tc.buildStubs(store)
 
 			server := newTestServer(t, store)
@@ -418,7 +420,7 @@ func TestDeleteAccountAPi(t *testing.T) {
 				store.EXPECT().
 					GetAccount(gomock.Any(), gomock.Eq(account.ID)).
 					Times(1).
-					Return(account, sql.ErrNoRows)
+					Return(account, db.ErrNoRowsFound)
 
 				store.EXPECT().
 					DeleteAccount(gomock.Any(), gomock.Any()).
@@ -483,7 +485,7 @@ func TestDeleteAccountAPi(t *testing.T) {
 				store.EXPECT().
 					DeleteAccount(gomock.Any(), gomock.Eq(account.ID)).
 					Times(1).
-					Return(sql.ErrNoRows)
+					Return(db.ErrNoRowsFound)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)

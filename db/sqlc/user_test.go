@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"simplebank/util"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +19,7 @@ func createRandomUser(t *testing.T) User {
 		FullName:       util.RandomString(6),
 		Email:          util.RandomString(6) + "@gmail.com",
 	}
-	user, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := testStore.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := testQueries.GetUser(context.Background(), user1.Username)
+	user2, err := testStore.GetUser(context.Background(), user1.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -59,7 +59,7 @@ func TestUpdateUserHashedPassword(t *testing.T) {
 		Username:       user1.Username,
 		HashedPassword: newHashedPassword,
 	}
-	user2, err := testQueries.UpdateUserHashedPassword(context.Background(), arg)
+	user2, err := testStore.UpdateUserHashedPassword(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -75,13 +75,13 @@ func TestUpdateUsersFullname(t *testing.T) {
 	newFullName := util.RandomString(6)
 	arg := UpdateUserParams{
 		Username: oldUser.Username,
-		FullName: sql.NullString{
+		FullName: pgtype.Text{
 			String: newFullName,
 			Valid:  true,
 		},
 	}
 
-	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	newUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEqual(t, oldUser.FullName, newUser.FullName)
 	require.Equal(t, newFullName, newUser.FullName)
@@ -92,13 +92,13 @@ func TestUpdateUsersEmail(t *testing.T) {
 	newEmail := util.RandomString(6) + "@gmail.com"
 	arg := UpdateUserParams{
 		Username: oldUser.Username,
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: newEmail,
 			Valid:  true,
 		},
 	}
 
-	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	newUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEqual(t, oldUser.Email, newUser.Email)
 	require.Equal(t, newEmail, newUser.Email)
@@ -110,17 +110,17 @@ func TestUpdateUsersFullnameEmail(t *testing.T) {
 	newEmail := util.RandomString(6) + "@gmail.com"
 	arg := UpdateUserParams{
 		Username: oldUser.Username,
-		FullName: sql.NullString{
+		FullName: pgtype.Text{
 			String: newFullName,
 			Valid:  true,
 		},
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: newEmail,
 			Valid:  true,
 		},
 	}
 
-	newUser, err := testQueries.UpdateUser(context.Background(), arg)
+	newUser, err := testStore.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEqual(t, oldUser.FullName, newUser.FullName)
 	require.Equal(t, newFullName, newUser.FullName)

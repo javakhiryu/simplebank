@@ -2,11 +2,11 @@ package worker
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	db "simplebank/db/sqlc"
 	"simplebank/util"
+
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )
@@ -48,7 +48,7 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 	}
 	user, err := processor.store.GetUser(ctx, payload.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			return fmt.Errorf("user does not exist: %w", asynq.SkipRetry)
 		}
 		return fmt.Errorf("failed to fetch user: %w", err)

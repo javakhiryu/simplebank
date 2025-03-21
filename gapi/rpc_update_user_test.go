@@ -2,7 +2,6 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 	mockdb "simplebank/db/mock"
 	db "simplebank/db/sqlc"
 	"simplebank/pb"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -45,11 +45,11 @@ func TestUpdateUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.UpdateUserParams{
 					Username: user.Username,
-					FullName: sql.NullString{
+					FullName: pgtype.Text{
 						String: newName,
 						Valid:  true,
 					},
-					Email: sql.NullString{
+					Email: pgtype.Text{
 						String: newEmail,
 						Valid:  true,
 					},
@@ -89,11 +89,11 @@ func TestUpdateUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.UpdateUserParams{
 					Username: user.Username,
-					FullName: sql.NullString{
+					FullName: pgtype.Text{
 						String: newName,
 						Valid:  true,
 					},
-					Email: sql.NullString{
+					Email: pgtype.Text{
 						String: newEmail,
 						Valid:  true,
 					},
@@ -102,7 +102,7 @@ func TestUpdateUserAPi(t *testing.T) {
 				store.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
 					Return(
-						db.User{}, sql.ErrNoRows)
+						db.User{}, db.ErrNoRowsFound)
 			},
 			buildContext: func(t *testing.T, tokenMaker token.Maker) context.Context {
 				return newContextWithAuth(t, tokenMaker, user.Username, time.Minute)
@@ -112,9 +112,8 @@ func TestUpdateUserAPi(t *testing.T) {
 				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.NotFound, st.Code())
-				
+
 			},
-			
 		},
 		{
 			name: "ExpiredToken",
@@ -126,11 +125,11 @@ func TestUpdateUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.UpdateUserParams{
 					Username: user.Username,
-					FullName: sql.NullString{
+					FullName: pgtype.Text{
 						String: newName,
 						Valid:  true,
 					},
-					Email: sql.NullString{
+					Email: pgtype.Text{
 						String: newEmail,
 						Valid:  true,
 					},
@@ -147,9 +146,8 @@ func TestUpdateUserAPi(t *testing.T) {
 				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.Unauthenticated, st.Code())
-				
+
 			},
-			
 		},
 		{
 			name: "NoAuthorization",
@@ -161,11 +159,11 @@ func TestUpdateUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.UpdateUserParams{
 					Username: user.Username,
-					FullName: sql.NullString{
+					FullName: pgtype.Text{
 						String: newName,
 						Valid:  true,
 					},
-					Email: sql.NullString{
+					Email: pgtype.Text{
 						String: newEmail,
 						Valid:  true,
 					},
@@ -182,9 +180,8 @@ func TestUpdateUserAPi(t *testing.T) {
 				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.Unauthenticated, st.Code())
-				
+
 			},
-			
 		},
 		{
 			name: "InvalidEmailAddress",
@@ -196,11 +193,11 @@ func TestUpdateUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.UpdateUserParams{
 					Username: user.Username,
-					FullName: sql.NullString{
+					FullName: pgtype.Text{
 						String: newName,
 						Valid:  true,
 					},
-					Email: sql.NullString{
+					Email: pgtype.Text{
 						String: newEmail,
 						Valid:  true,
 					},
@@ -217,9 +214,8 @@ func TestUpdateUserAPi(t *testing.T) {
 				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.InvalidArgument, st.Code())
-				
+
 			},
-			
 		},
 	}
 

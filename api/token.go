@@ -1,9 +1,9 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
+	db "simplebank/db/sqlc"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,8 +17,8 @@ type refreshTokenResponse struct {
 	AccessTokenExpiresAt time.Time `json:"access_token_expires_at"`
 }
 
-
 // refreshToken godoc
+//
 //	@Summary		Refresh a token
 //	@Description	Refresh a token
 //	@Tags			token
@@ -48,7 +48,7 @@ func (server *Server) refreshToken(ctx *gin.Context) {
 
 	session, err := server.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -64,7 +64,7 @@ func (server *Server) refreshToken(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("incorrect session user")))
 		return
 	}
-	
+
 	if time.Now().After(refreshPayload.ExpiredAt) {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("session has expired")))
 		return

@@ -2,7 +2,6 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 	db "simplebank/db/sqlc"
 	"simplebank/pb"
 	"simplebank/util"
@@ -30,7 +29,7 @@ func (server *Server) UpdateUserPassword(ctx context.Context, req *pb.UpdateUser
 
 	user, err := server.store.GetUser(ctx, authPayload.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -52,7 +51,7 @@ func (server *Server) UpdateUserPassword(ctx context.Context, req *pb.UpdateUser
 
 	user, err = server.store.UpdateUserHashedPassword(ctx, arg)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to update user password: %v", err)

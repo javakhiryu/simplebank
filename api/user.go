@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	db "simplebank/db/sqlc"
@@ -119,7 +118,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 	}
 	user, err := server.store.GetUser(ctx, req.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -158,7 +157,7 @@ func (server *Server) updateUserHashedPassword(ctx *gin.Context) {
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	user, err := server.store.GetUser(ctx, authPayload.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -231,7 +230,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 
 	user, err := server.store.GetUser(ctx, req.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

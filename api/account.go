@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -17,22 +16,22 @@ type createAccountRequest struct {
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
-
 // createAccount godoc
-//	@Summary		Create an account
-//	@Description	Create an account for the authorized user
-//	@Tags			account
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		createAccountRequest	true	"Create Account Request"
-//	@Success		200		{object}	db.Account
-//	@Failure		400		{object}	ErrorResponse
-//	@Failure		401		{object}	ErrorResponse
-//	@Failure		403		{object}	ErrorResponse
-//	@Failure		500		{object}	ErrorResponse
-//	@Security		Bearer
-//	@Router			/createAccount [post]
-//  @Security Bearer
+//
+//		@Summary		Create an account
+//		@Description	Create an account for the authorized user
+//		@Tags			account
+//		@Accept			json
+//		@Produce		json
+//		@Param			request	body		createAccountRequest	true	"Create Account Request"
+//		@Success		200		{object}	db.Account
+//		@Failure		400		{object}	ErrorResponse
+//		@Failure		401		{object}	ErrorResponse
+//		@Failure		403		{object}	ErrorResponse
+//		@Failure		500		{object}	ErrorResponse
+//		@Security		Bearer
+//		@Router			/createAccount [post]
+//	 @Security Bearer
 func (server *Server) createAccount(ctx *gin.Context) {
 	var req createAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -68,22 +67,22 @@ type getAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-
 // getAccount godoc
-//	@Summary		Get account by ID
-//	@Description	Retrieve an account by its ID, ensuring the account belongs to the authenticated user
-//	@Tags			account
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		int	true	"Account ID"
-//	@Success		200	{object}	db.Account
-//	@Failure		400	{object}	ErrorResponse
-//	@Failure		401	{object}	ErrorResponse
-//	@Failure		404	{object}	ErrorResponse
-//	@Failure		500	{object}	ErrorResponse
-//	@Security		Bearer
-//	@Router			/account/{id} [get]
-//  @Security Bearer
+//
+//		@Summary		Get account by ID
+//		@Description	Retrieve an account by its ID, ensuring the account belongs to the authenticated user
+//		@Tags			account
+//		@Accept			json
+//		@Produce		json
+//		@Param			id	path		int	true	"Account ID"
+//		@Success		200	{object}	db.Account
+//		@Failure		400	{object}	ErrorResponse
+//		@Failure		401	{object}	ErrorResponse
+//		@Failure		404	{object}	ErrorResponse
+//		@Failure		500	{object}	ErrorResponse
+//		@Security		Bearer
+//		@Router			/account/{id} [get]
+//	 @Security Bearer
 func (server *Server) getAccount(ctx *gin.Context) {
 	var req getAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -94,7 +93,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	account, err := server.store.GetAccount(ctx, req.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -115,23 +114,23 @@ type listAccountRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 }
 
-
 // listAccount godoc
-//	@Summary		List accounts
-//	@Description	List accounts for the authorized user
-//	@Tags			account
-//	@Accept			json
-//	@Produce		json
-//	@Param			page_size	query		int	true	"Page Size"
-//	@Param			page_id		query		int	true	"Page ID"
-//	@Success		200			{array}		db.Account
-//	@Failure		400			{object}	ErrorResponse
-//	@Failure		401			{object}	ErrorResponse
-//	@Failure		404			{object}	ErrorResponse
-//	@Failure		500			{object}	ErrorResponse
-//	@Security		Bearer
-//	@Router			/accounts [get]
-//  @Security Bearer
+//
+//		@Summary		List accounts
+//		@Description	List accounts for the authorized user
+//		@Tags			account
+//		@Accept			json
+//		@Produce		json
+//		@Param			page_size	query		int	true	"Page Size"
+//		@Param			page_id		query		int	true	"Page ID"
+//		@Success		200			{array}		db.Account
+//		@Failure		400			{object}	ErrorResponse
+//		@Failure		401			{object}	ErrorResponse
+//		@Failure		404			{object}	ErrorResponse
+//		@Failure		500			{object}	ErrorResponse
+//		@Security		Bearer
+//		@Router			/accounts [get]
+//	 @Security Bearer
 func (server *Server) listAccount(ctx *gin.Context) {
 	var req listAccountRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -160,20 +159,21 @@ type deleteAccountRequest struct {
 }
 
 // deleteAccount godoc
-//	@Summary		Delete an account
-//	@Description	Delete an account by ID
-//	@Tags			account
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		int		true	"Account ID"
-//	@Success		200	{string}	string	"Account with Id: {id} has been deleted"
-//	@Failure		400	{object}	ErrorResponse
-//	@Failure		401	{object}	ErrorResponse
-//	@Failure		404	{object}	ErrorResponse
-//	@Failure		500	{object}	ErrorResponse
-//	@Security		Bearer
-//	@Router			/account/{id} [delete]
-//  @Security Bearer
+//
+//		@Summary		Delete an account
+//		@Description	Delete an account by ID
+//		@Tags			account
+//		@Accept			json
+//		@Produce		json
+//		@Param			id	path		int		true	"Account ID"
+//		@Success		200	{string}	string	"Account with Id: {id} has been deleted"
+//		@Failure		400	{object}	ErrorResponse
+//		@Failure		401	{object}	ErrorResponse
+//		@Failure		404	{object}	ErrorResponse
+//		@Failure		500	{object}	ErrorResponse
+//		@Security		Bearer
+//		@Router			/account/{id} [delete]
+//	 @Security Bearer
 func (server *Server) deleteAccount(ctx *gin.Context) {
 	var req deleteAccountRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -185,7 +185,7 @@ func (server *Server) deleteAccount(ctx *gin.Context) {
 
 	account, err := server.store.GetAccount(ctx, req.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
@@ -201,7 +201,7 @@ func (server *Server) deleteAccount(ctx *gin.Context) {
 
 	err = server.store.DeleteAccount(ctx, req.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

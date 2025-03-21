@@ -15,6 +15,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
+
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -129,7 +130,7 @@ func TestCreateUserAPi(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, res *pb.CreateUserResponse, err error) {
 				require.Error(t, err)
-				st, ok :=status.FromError(err)
+				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.Internal, st.Code())
 			},
@@ -157,7 +158,7 @@ func TestCreateUserAPi(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, res *pb.CreateUserResponse, err error) {
 				require.Error(t, err)
-				st, ok :=status.FromError(err)
+				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.AlreadyExists, st.Code())
 			},
@@ -168,7 +169,7 @@ func TestCreateUserAPi(t *testing.T) {
 				Username: user.Username,
 				Password: password,
 				FullName: user.FullName,
-				Email:   "",
+				Email:    "",
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
 
@@ -183,7 +184,7 @@ func TestCreateUserAPi(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, res *pb.CreateUserResponse, err error) {
 				require.Error(t, err)
-				st, ok :=status.FromError(err)
+				st, ok := status.FromError(err)
 				require.True(t, ok)
 				require.Equal(t, codes.InvalidArgument, st.Code())
 			},

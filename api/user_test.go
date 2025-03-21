@@ -19,6 +19,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -230,7 +231,7 @@ func TestGetUserAPi(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).
 					Times(1).
-					Return(db.User{}, sql.ErrNoRows)
+					Return(db.User{}, db.ErrNoRowsFound)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
@@ -372,7 +373,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				store.EXPECT().
 					GetUser(gomock.Any(), gomock.Eq(user.Username)).
 					Times(1).
-					Return(db.User{}, sql.ErrNoRows)
+					Return(db.User{}, db.ErrNoRowsFound)
 
 				store.EXPECT().UpdateUserHashedPassword(gomock.Any(), gomock.Any()).
 					Times(0)
@@ -506,8 +507,8 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
+				"username": user.Username,
+				"password": password,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -526,8 +527,8 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "BadRequest",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  "",
+				"username": user.Username,
+				"password": "",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -541,14 +542,14 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "UserNotFound",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
+				"username": user.Username,
+				"password": password,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					GetUser(gomock.Any(), gomock.Eq(user.Username)).
 					Times(1).
-					Return(db.User{}, sql.ErrNoRows)
+					Return(db.User{}, db.ErrNoRowsFound)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
@@ -557,8 +558,8 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
+				"username": user.Username,
+				"password": password,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -573,8 +574,8 @@ func TestLoginUserAPI(t *testing.T) {
 		{
 			name: "WrongPassword",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  "password",
+				"username": user.Username,
+				"password": "password",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().

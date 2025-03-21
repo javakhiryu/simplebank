@@ -2,20 +2,21 @@ package db
 
 import (
 	"context"
-	_"database/sql"
+	_ "database/sql"
 	"simplebank/util"
 	"testing"
-	_"time"
+	_ "time"
 
 	"github.com/stretchr/testify/require"
 )
-func createRandomTransfer(t *testing.T, fromAccount Account, toAccount Account) Transfer{
-	arg :=CreateTransferParams{
+
+func createRandomTransfer(t *testing.T, fromAccount Account, toAccount Account) Transfer {
+	arg := CreateTransferParams{
 		FromAccountID: fromAccount.ID,
-		ToAccountID: toAccount.ID,
-		Amount: util.RandomMoney(),
+		ToAccountID:   toAccount.ID,
+		Amount:        util.RandomMoney(),
 	}
-	transfer, err := testQueries.CreateTransfer(context.Background(), arg)
+	transfer, err := testStore.CreateTransfer(context.Background(), arg)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, transfer)
@@ -29,19 +30,18 @@ func createRandomTransfer(t *testing.T, fromAccount Account, toAccount Account) 
 	return transfer
 }
 
-
-func TestCreateTransfer(t *testing.T){
+func TestCreateTransfer(t *testing.T) {
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 	createRandomTransfer(t, account1, account2)
 }
 
-func TestGetTransfer(t *testing.T){
+func TestGetTransfer(t *testing.T) {
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 	transfer1 := createRandomTransfer(t, account1, account2)
 
-	transfer2, err :=testQueries.GetTransfer(context.Background(), transfer1.ID)
+	transfer2, err := testStore.GetTransfer(context.Background(), transfer1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, transfer2)
 
@@ -52,25 +52,25 @@ func TestGetTransfer(t *testing.T){
 	require.Equal(t, transfer1.CreatedAt, transfer2.CreatedAt)
 }
 
-func TestListTransfer(t *testing.T){
+func TestListTransfer(t *testing.T) {
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
-	for i:=0; i<10; i++{
+	for i := 0; i < 10; i++ {
 		createRandomTransfer(t, account1, account2)
 	}
 	arg := ListTransfersFromToParams{
 		FromAccountID: account1.ID,
-		ToAccountID: account2.ID,
-		Limit: 5,
-		Offset: 5,
+		ToAccountID:   account2.ID,
+		Limit:         5,
+		Offset:        5,
 	}
-	transfers, err :=testQueries.ListTransfersFromTo(context.Background(), arg)
+	transfers, err := testStore.ListTransfersFromTo(context.Background(), arg)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, transfers)
 
 	require.Len(t, transfers, 5)
-	for _, transfer := range transfers{
+	for _, transfer := range transfers {
 		require.NotEmpty(t, transfer)
 	}
 }

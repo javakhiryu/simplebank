@@ -2,12 +2,12 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 	db "simplebank/db/sqlc"
 	"simplebank/pb"
 	"simplebank/valid"
 	_ "simplebank/valid"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,11 +28,11 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 	}
 	arg := db.UpdateUserParams{
 		Username: req.GetUsername(),
-		FullName: sql.NullString{
+		FullName: pgtype.Text{
 			String: req.GetFullName(),
 			Valid:  req.GetFullName() != "",
 		},
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: req.GetEmail(),
 			Valid:  req.GetEmail() != "",
 		},
@@ -40,7 +40,7 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 
 	user, err := server.store.UpdateUser(ctx, arg)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == db.ErrNoRowsFound {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
