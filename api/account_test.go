@@ -17,7 +17,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
-	"github.com/lib/pq"
 
 	"github.com/stretchr/testify/require"
 )
@@ -192,10 +191,9 @@ func TestCreateAccountAPi(t *testing.T) {
 					Currency: account.Currency,
 					Balance:  0,
 				}
-				pqError := &pq.Error{Code: "23503"}
 				store.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
-					Return(account, pqError)
+					Return(account, db.ErrForeignKeyViolation)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusForbidden, recorder.Code)

@@ -14,7 +14,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/lib/pq"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -145,15 +144,11 @@ func TestCreateUserAPi(t *testing.T) {
 				Email:    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
-				pqError := &pq.Error{Code: "23505"}
 				store.EXPECT().CreateUserTx(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.CreateUserTxResult{}, pqError)
-				taskPayload := &worker.PayloadSendVerifyEmail{
-					Username: user.Username,
-				}
+					Return(db.CreateUserTxResult{}, db.ErrUniqueViolation)
 				taskDistributor.EXPECT().
-					DistributeTaskSendVerifyEmail(gomock.Any(), taskPayload, gomock.Any()).
+					DistributeTaskSendVerifyEmail(gomock.Any(), gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(t *testing.T, res *pb.CreateUserResponse, err error) {
