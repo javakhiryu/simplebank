@@ -193,7 +193,7 @@ func TestGetUserAPi(t *testing.T) {
 			name:     "OK",
 			username: user.Username,
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 
@@ -210,7 +210,7 @@ func TestGetUserAPi(t *testing.T) {
 			name:     "BadRequest",
 			username: "_",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Any()).
@@ -224,7 +224,7 @@ func TestGetUserAPi(t *testing.T) {
 			name:     "UserNotFound",
 			username: user.Username,
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).
@@ -239,7 +239,7 @@ func TestGetUserAPi(t *testing.T) {
 			name:     "InternalError",
 			username: user.Username,
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 
@@ -299,7 +299,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": newPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -322,7 +322,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": "123",
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -343,7 +343,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": newPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -365,7 +365,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": newPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -387,7 +387,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": newPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -409,7 +409,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": newPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -448,7 +448,7 @@ func TestUpdatePasswordAPI(t *testing.T) {
 				"new_password": oldPassword,
 			},
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationBearer, user.Username, user.Role, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).
@@ -615,6 +615,7 @@ func randomUser(password string) db.User {
 		HashedPassword: password,
 		FullName:       util.RandomString(6),
 		Email:          util.RandomString(6) + "@email.com",
+		Role: util.DepositorRole,
 	}
 }
 

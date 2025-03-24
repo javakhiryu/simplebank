@@ -25,9 +25,9 @@ func newTestServer(t *testing.T, store db.Store, taskDistibutor worker.TaskDistr
 	return server
 }
 
-func newContextWithAuth(t *testing.T, tokenMaker token.Maker, username string, tokenDuration time.Duration) context.Context {
+func newContextWithAuth(t *testing.T, tokenMaker token.Maker, username string, role string, tokenDuration time.Duration) context.Context {
 	ctx := context.Background()
-	accessToken, _, err := tokenMaker.CreateToken(username, tokenDuration)
+	accessToken, _, err := tokenMaker.CreateToken(username, role, tokenDuration)
 	require.NoError(t, err)
 	md := metadata.MD{
 		authorizationHeaderKey: []string{
