@@ -26,7 +26,12 @@ spec:
   ports:
     - protocol: TCP  # Протокол, который будет использоваться (TCP или UDP).
       port: 80       # Порт, на котором Service будет доступен внутри кластера.
-      targetPort: 8080  # Порт, на который Service будет перенаправлять трафик в Pod'ах.
-
+      targetPort: http-server  # Порт, на который Service будет перенаправлять трафик в Pod'ах.
+      name: http-service
+    - protocol: TCP  # Протокол, который будет использоваться (TCP или UDP).
+      port: 90       # Порт, на котором Service будет доступен внутри кластера.
+      targetPort: grpc-server  # Порт, на который Service будет перенаправлять трафик в Pod'ах.
+      name: grpc-service
+    
   # Тип Service. В данном случае это ClusterIP.
   type: ClusterIP

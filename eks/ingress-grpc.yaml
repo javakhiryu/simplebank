@@ -1,0 +1,37 @@
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это networking.k8s.io/v1, которая поддерживает Ingress.
+apiVersion: networking.k8s.io/v1
+
+# Тип ресурса, который мы создаем. В данном случае это Ingress.
+# Ingress управляет входящим HTTP/HTTPS-трафиком и направляет его на соответствующие Service.
+kind: Ingress
+
+# Метаданные Ingress, такие как имя.
+metadata:
+  # Имя Ingress. Это имя будет использоваться для управления Ingress через kubectl.
+  name: simple-bank-ingress-grpc
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt  # Аннотация для указания ClusterIssuer, который будет использоваться для выдачи сертификата.
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+# Спецификация Ingress, которая описывает правила маршрутизации трафика.
+spec:
+  # Класс Ingress, который будет обрабатывать этот ресурс.
+  # В данном случае это nginx (IngressClass, который мы определили выше).
+  ingressClassName: nginx
+  # Правила маршрутизации трафика.
+  rules:
+  - host: "gapi.javakhiryu-simplebank.click"  # Домен, на который будет направлен трафик.
+    http:
+      paths:
+      - pathType: Prefix  # Тип пути. Prefix означает, что путь будет сопоставляться с началом URL.
+        path: "/"         # Путь, на который будет направлен трафик. В данном случае корневой путь.
+        backend:
+          service:
+            name: simple-bank-api-service  # Имя Service, на который будет направлен трафик.
+            port:
+              number: 90  # Порт Service, на который будет направлен трафик.
+  tls:
+  - hosts:
+    - gapi.javakhiryu-simplebank.click  # Домен, на который будет направлен трафик.
+    secretName: simple-bank-gapi-cert  # Имя Secret, в котором будет храниться SSL-сертификат.

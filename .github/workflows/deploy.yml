@@ -66,7 +66,7 @@ jobs:
       # Загрузка Docker-образа в ECR
 
     - name: Update kubeconfig
-      run: aws eks update-kubeconfig --name simplebank --region eu-central-1 
+      run: aws eks update-kubeconfig --name simple-bank-eks --region eu-central-1 
 
     # Шаг 6: Деплой в Kubernetes
     - name: Deploy image, expose, add issuer, add ingress
@@ -74,6 +74,8 @@ jobs:
         kubectl apply -f eks/deployment.yaml
         kubectl apply -f eks/service.yaml
         kubectl apply -f eks/issuer.yaml
-        kubectl apply -f eks/ingress.yaml
+        kubectl apply -f eks/ingress-nginx.yaml
+        kubectl apply -f eks/ingress-grpc.yaml
+        kubectl apply -f eks/ingress-http.yaml
 
         

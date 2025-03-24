@@ -49,3 +49,6 @@ spec:
         # Порт, который будет открыт в контейнере.
         ports:
          - containerPort: 8080  # Контейнер будет слушать на порту 8080.
+           name: http-server
+         - containerPort: 9090
+           name: grpc-server

@@ -49,7 +49,7 @@ COPY wait-for.sh .
 COPY db/migration ./db/migration
 
 # Открываем порт 8080 для доступа к приложению.
-EXPOSE 8080
+EXPOSE 8080 9090
 
 # Указываем команду по умолчанию для запуска приложения.
 CMD ["/app/main"]

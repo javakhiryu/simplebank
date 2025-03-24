@@ -1,0 +1,18 @@
+# Указываем версию API Kubernetes, которую используем.
+# В данном случае это networking.k8s.io/v1, которая поддерживает IngressClass.
+apiVersion: networking.k8s.io/v1
+
+# Тип ресурса, который мы создаем. В данном случае это IngressClass.
+# IngressClass определяет, какой контроллер Ingress будет обрабатывать Ingress-ресурсы.
+kind: IngressClass
+
+# Метаданные IngressClass, такие как имя.
+metadata:
+  # Имя IngressClass. Это имя будет использоваться для ссылки на этот класс в Ingress-ресурсах.
+  name: nginx
+
+# Спецификация IngressClass.
+spec:
+  # Контроллер, который будет обрабатывать Ingress-ресурсы с этим классом.
+  # В данном случае это ingress-nginx (популярный контроллер для управления входящим трафиком).
+  controller: k8s.io/ingress-nginx
